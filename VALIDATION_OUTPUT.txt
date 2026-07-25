@@ -1,36 +1,88 @@
-Host-Device Control PoC System v0.1.3 validation
-Date: 2026-07-25
+Host-Device Control PoC System v0.1.4 validation
+Execution date: 2026-07-25
+Execution scope: complete replacement source tree derived from b340645
 
-[1] Python syntax compilation
-Python validation tools compiled successfully.
+Commands executed
+=================
 
-[2] Project repository validation
-Project repository validation passed.
+1. python -m compileall -q tools
+   Result: PASS
 
-[3] Protocol contract validation in source-package mode
-NOTICE: Git history is unavailable; pinned authority commit provenance was not verified. Run from a full checkout with --require-git-history for CI-grade validation.
-Protocol contract, provenance, and vectors validated.
+2. python tools/validate_project_repository.py
+   Result: PASS
+   Output: Project repository validation passed.
 
-[4] Protocol validator regression tests
-PASS: invalid YAML rejected
-PASS: vector metadata mismatch rejected
-PASS: frame offset mismatch rejected
-PASS: stale Protocol SHA rejected
-PASS: sequence field endian conflict rejected
-PASS: CRC field endian conflict rejected
-PASS: field type-size mismatch rejected
-PASS: sequence width mismatch rejected
-PASS: event accepted as direct response rejected
-PASS: response sequence rule conflict rejected
-PASS: required Git history absence rejected
-PASS: historical Protocol blob mismatch rejected
-PASS: fake authority commit rejected
-Protocol validator regression tests passed.
+3. python tools/validate_protocol_contract.py
+   Result: PASS with expected source-package notice
+   Output:
+     NOTICE: Git history is unavailable; pinned authority commit provenance was not verified.
+     Protocol contract, provenance, and vectors validated.
 
-[5] Authority Protocol byte comparison
-7ff8db3a1ed669407e0d4cada2a78b212ea3c7bccdf371f232a2689a02e7c56e  /mnt/data/e4aa40b-protocol.yaml
-7ff8db3a1ed669407e0d4cada2a78b212ea3c7bccdf371f232a2689a02e7c56e  /mnt/data/host-device-control-poc-system-v0.1.3/protocol/protocol.yaml
-The GitHub e4aa40b authority blob and packaged protocol/protocol.yaml are byte-identical.
+4. python tools/test_protocol_validator_regressions.py
+   Result: PASS
+   Coverage: 14 rejection cases
+     - malformed YAML
+     - vector metadata drift
+     - framing offset drift
+     - stale Protocol hash
+     - sequence endian conflict
+     - field type mismatch
+     - sequence width mismatch
+     - event used as command response
+     - response sequence mismatch
+     - duplicate message ID
+     - CRC parameter drift
+     - unknown response name
+     - missing Git history in strict mode
+     - fake authority commit
 
-Note: Strict historical provenance is configured in CI with fetch-depth: 0 and --require-git-history.
-A source ZIP does not contain .git history; the regression suite verifies the strict Git-provenance code path using temporary Git repositories.
+5. python tools/validate_transport_capacity.py
+   Result: PASS
+   Validated boundary:
+     - UART: 115200 bps, 8N1
+     - telemetry frame: 24 bytes / 240 wire bits
+     - minimum interval: 2500 us
+     - maximum Protocol rate: 400 Hz
+     - nominal utilization: approximately 83.34%
+     - policy maximum utilization: 85%
+     - policy minimum reserved headroom: 15%
+
+6. python tools/test_transport_capacity_validator.py
+   Result: PASS
+   Coverage: 7 rejection cases
+     - impossible 1000-us stream
+     - telemetry frame-size mismatch
+     - removal of all transport headroom
+     - internally consistent 401-Hz policy bypass
+     - internally consistent 479-Hz policy bypass
+     - overstated DEVICE_INFO capability
+     - policy-only weakening
+
+Protocol authority identity
+===========================
+
+Authority commit:
+  b340645e6cb8fef9906aa7fecf22e2ca011a32bc
+
+Protocol SHA-256:
+  c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef
+
+The replacement package keeps protocol/protocol.yaml byte-identical to the
+b340645 authority blob and updates both provenance metadata files to this
+commit and SHA-256.
+
+Not executed in the extracted source package
+============================================
+
+python tools/validate_protocol_contract.py --require-git-history
+
+Reason: a ZIP does not contain the repository .git history. This strict check
+shall be executed by GitHub Actions after the replacement tree is committed
+and pushed. No CI PASS is claimed by this file.
+
+Hardware and implementation alignment
+=====================================
+
+NOT RUN. This package corrects the system authority, provenance, validation
+policy, validators, regression tests, and documentation. It does not establish
+PC/MCU implementation alignment or hardware interoperability evidence.

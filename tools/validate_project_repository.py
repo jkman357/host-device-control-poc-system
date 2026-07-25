@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Validate the minimum structure and pinned-baseline syntax of this project repository."""
+"""Validate the PoC system repository structure and governance boundaries."""
 
 from __future__ import annotations
 
-import re
+import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -11,148 +11,152 @@ from typing import Any
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-FULL_SHA_PATTERN = re.compile(r"^[0-9a-f]{40}$")
 
 REQUIRED_FILES = [
-    "README.md",
-    "START_HERE.md",
+    ".github/workflows/project-validation.yml",
+    ".gitignore",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
     "FRAMEWORK_REFERENCE.md",
-    "PROJECT_INPUT.md",
-    "REPOSITORY_MAP.md",
-    "QUICK_START.md",
-    "VALIDATION_STATUS.md",
     "LICENSE",
     "NOTICE.md",
+    "PROJECT_INPUT.md",
+    "QUICK_START.md",
+    "README.md",
+    "REPOSITORY_MAP.md",
+    "START_HERE.md",
+    "THIRD_PARTY_NOTICES.md",
+    "VALIDATION_OUTPUT.txt",
+    "VALIDATION_STATUS.md",
     "requirements-validation.txt",
-    ".github/workflows/project-validation.yml",
     "baselines/repositories.yaml",
     "docs/Approval_Records.md",
     "docs/Decision_Log.md",
-    "docs/Project_Requirements.md",
-    "docs/System_Architecture.md",
-    "docs/Protocol_Ownership.md",
+    "docs/Evidence_Index.md",
     "docs/Integration_and_Bringup_Guide.md",
+    "docs/Known_Limitations.md",
+    "docs/Project_Requirements.md",
+    "docs/Protocol_Ownership.md",
+    "docs/System_Architecture.md",
     "docs/VV_Plan.md",
     "docs/VV_Results.md",
-    "docs/Evidence_Index.md",
-    "docs/Known_Limitations.md",
-    "validation/test-cases.yaml",
-    "protocol/protocol.yaml",
+    "evidence/README.md",
+    "evidence/templates/Test_Execution_Record.md",
     "protocol/CHANGELOG.md",
     "protocol/IMPLEMENTATION_ALIGNMENT.md",
+    "protocol/README.md",
     "protocol/implementation-status.yaml",
+    "protocol/protocol.yaml",
+    "protocol/test-vectors/README.md",
     "protocol/test-vectors/protocol-v0.1.0-vectors.json",
-    "tools/validate_protocol_contract.py",
+    "tools/finalize_protocol_authority.py",
     "tools/test_protocol_validator_regressions.py",
+    "tools/test_transport_capacity_validator.py",
+    "tools/validate_project_repository.py",
+    "tools/validate_protocol_contract.py",
+    "tools/validate_transport_capacity.py",
+    "validation/test-cases.yaml",
+    "validation/transport-capacity-policy.yaml",
+    "validation/results/README.md",
 ]
 
-EXPECTED_REPOSITORIES = {
-    "host-device-control-framework",
-    "host-device-control-project-template",
-    "host-device-control-poc-stm32f446re-fw",
-    "host-device-control-poc-pc-app",
+FORBIDDEN_PACKAGE_FILES = {
+    "APPLY.md",
+    "COMMIT_MESSAGES.txt",
+    "TEST_RESULTS.txt",
 }
 
 
-def fail(message: str) -> None:
-    print(f"ERROR: {message}")
-
-
-def load_yaml(path: Path) -> Any:
+def load_yaml(path: Path, errors: list[str]) -> Any:
     try:
         return yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, yaml.YAMLError) as exc:
-        fail(f"{path.relative_to(ROOT)} is invalid YAML: {exc}")
+        errors.append(f"invalid YAML {path.relative_to(ROOT)}: {exc}")
         return None
 
 
 def main() -> int:
-    errors = 0
+    errors: list[str] = []
 
     for relative in REQUIRED_FILES:
         path = ROOT / relative
         if not path.is_file():
-            fail(f"missing required file: {relative}")
-            errors += 1
+            errors.append(f"missing required file: {relative}")
+            continue
+        try:
+            content = path.read_bytes()
+        except OSError as exc:
+            errors.append(f"unable to read {relative}: {exc}")
+            continue
+        if not content:
+            errors.append(f"required file is empty: {relative}")
+        if b"\x00" in content:
+            errors.append(f"text repository file contains NUL bytes: {relative}")
 
-    baseline_path = ROOT / "baselines" / "repositories.yaml"
-    if baseline_path.is_file():
-        baseline = load_yaml(baseline_path)
-        if not isinstance(baseline, dict):
-            fail("baseline manifest root shall be a mapping")
-            errors += 1
-        else:
-            repositories = baseline.get("repositories")
-            if not isinstance(repositories, list):
-                fail("baseline repositories shall be a list")
-                errors += 1
-            else:
-                names: set[str] = set()
-                for index, repository in enumerate(repositories):
-                    if not isinstance(repository, dict):
-                        fail(f"baseline repositories[{index}] shall be a mapping")
-                        errors += 1
-                        continue
-                    name = repository.get("name")
-                    commit = repository.get("commit")
-                    if isinstance(name, str):
-                        names.add(name)
-                    else:
-                        fail(f"baseline repositories[{index}].name shall be a string")
-                        errors += 1
-                    if not isinstance(commit, str) or not FULL_SHA_PATTERN.fullmatch(commit):
-                        fail(f"baseline repository {name or index} commit shall be a full lowercase 40-character SHA")
-                        errors += 1
+    for name in FORBIDDEN_PACKAGE_FILES:
+        if (ROOT / name).exists():
+            errors.append(f"package-only file shall not be committed: {name}")
+    for path in ROOT.rglob("*.patch"):
+        if ".git" not in path.parts:
+            errors.append(f"package-only patch shall not be committed: {path.relative_to(ROOT)}")
 
-                missing_names = EXPECTED_REPOSITORIES - names
-                if missing_names:
-                    fail("baseline manifest missing repositories: " + ", ".join(sorted(missing_names)))
-                    errors += 1
+    for relative in [
+        "baselines/repositories.yaml",
+        "protocol/implementation-status.yaml",
+        "protocol/protocol.yaml",
+        "validation/test-cases.yaml",
+        "validation/transport-capacity-policy.yaml",
+        ".github/workflows/project-validation.yml",
+    ]:
+        path = ROOT / relative
+        if path.is_file():
+            document = load_yaml(path, errors)
+            if document is not None and not isinstance(document, dict):
+                errors.append(f"YAML root shall be a mapping: {relative}")
 
-            shared_contract = baseline.get("shared_contract")
-            if not isinstance(shared_contract, dict):
-                fail("shared Protocol contract record is missing")
-                errors += 1
-            else:
-                authority = shared_contract.get("authority")
-                if not isinstance(authority, dict):
-                    fail("shared Protocol authority record is missing")
-                    errors += 1
-                else:
-                    authority_commit = authority.get("repository_commit")
-                    if not isinstance(authority_commit, str) or not FULL_SHA_PATTERN.fullmatch(authority_commit):
-                        fail("shared Protocol authority commit shall be a full lowercase 40-character SHA")
-                        errors += 1
-                    if authority.get("repository_commit_status") != "pinned":
-                        fail("shared Protocol authority commit status shall be pinned")
-                        errors += 1
+    vector_path = ROOT / "protocol/test-vectors/protocol-v0.1.0-vectors.json"
+    if vector_path.is_file():
+        try:
+            vector_doc = json.loads(vector_path.read_text(encoding="utf-8"))
+            if not isinstance(vector_doc, dict):
+                errors.append("Protocol vector JSON root shall be an object")
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            errors.append(f"invalid Protocol vector JSON: {exc}")
 
-                if "project_layer_ownership_status" not in shared_contract:
-                    fail("shared Protocol ownership status is not recorded")
-                    errors += 1
+    license_text = (ROOT / "LICENSE").read_text(encoding="utf-8", errors="replace") if (ROOT / "LICENSE").is_file() else ""
+    notice_text = (ROOT / "NOTICE.md").read_text(encoding="utf-8", errors="replace") if (ROOT / "NOTICE.md").is_file() else ""
+    if "Copyright © 2026 Ray Yang" not in license_text:
+        errors.append("LICENSE copyright identity is missing or changed")
+    if "NO LICENSE GRANTED" not in license_text:
+        errors.append("LICENSE shall retain NO LICENSE GRANTED")
+    if "No open-source license is granted" not in notice_text:
+        errors.append("NOTICE.md shall retain the no-open-source-license notice")
 
-    workflow_path = ROOT / ".github" / "workflows" / "project-validation.yml"
-    workflow_text = workflow_path.read_text(encoding="utf-8") if workflow_path.is_file() else ""
-    required_workflow_markers = [
-        "uses: actions/checkout@v6",
-        "fetch-depth: 0",
-        "uses: actions/setup-python@v6",
-        "python tools/validate_protocol_contract.py --require-git-history",
-        "python tools/test_protocol_validator_regressions.py",
-    ]
-    for marker in required_workflow_markers:
-        if marker not in workflow_text:
-            fail(f"GitHub Actions workflow marker is missing: {marker}")
-            errors += 1
+    workflow_path = ROOT / ".github/workflows/project-validation.yml"
+    if workflow_path.is_file():
+        workflow = workflow_path.read_text(encoding="utf-8")
+        required_commands = [
+            "validate_project_repository.py",
+            "validate_protocol_contract.py --require-git-history",
+            "test_protocol_validator_regressions.py",
+            "validate_transport_capacity.py",
+            "test_transport_capacity_validator.py",
+        ]
+        for command in required_commands:
+            if command not in workflow:
+                errors.append(f"CI workflow does not execute required validation: {command}")
+        if "fetch-depth: 0" not in workflow:
+            errors.append("CI checkout shall use fetch-depth: 0 for provenance verification")
 
-    result_path = ROOT / "docs" / "VV_Results.md"
-    result_text = result_path.read_text(encoding="utf-8") if result_path.is_file() else ""
-    if "No system-level test is marked `PASS`" not in result_text:
-        fail("V&V result boundary statement is missing")
-        errors += 1
+    requirements = (ROOT / "requirements-validation.txt").read_text(encoding="utf-8").splitlines()
+    active_requirements = [line.strip() for line in requirements if line.strip() and not line.lstrip().startswith("#")]
+    if not any(line.startswith("PyYAML==") for line in active_requirements):
+        errors.append("requirements-validation.txt shall pin PyYAML with ==")
 
     if errors:
-        print(f"Validation failed with {errors} error(s).")
+        for error in errors:
+            print(f"ERROR: {error}")
+        print(f"Project repository validation failed with {len(errors)} error(s).")
         return 1
 
     print("Project repository validation passed.")

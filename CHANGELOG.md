@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.4 — 2026-07-25
+
+- Pinned the unchanged Protocol contract to authority commit `b340645e6cb8fef9906aa7fecf22e2ca011a32bc` and SHA-256 `c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef`.
+- Added `validation/transport-capacity-policy.yaml` as the explicit system governance policy for the 2500-us minimum interval, 400-Hz maximum rate, maximum 85% nominal UART utilization, and minimum 15% reserved headroom.
+- Hardened capacity validation so internally consistent 401-Hz and 479-Hz edits are rejected unless the separate policy is deliberately reviewed and changed.
+- Expanded transport-capacity regression coverage for policy drift, policy-only weakening, overstated device capability, and near-saturation configurations.
+- Removed the package-only `APPLY.md` artifact from the project tree and added repository checks that reject package/patch residue.
+- Preserved Protocol version `0.1.0`, wire version `0x01`, frame layout, message IDs, CRC, and encoded wire behavior.
+- Historical Git provenance remains verifiable only from a full clone; extracted ZIP validation reports that limitation instead of manufacturing a PASS.
+
 ## v0.1.3 — 2026-07-25
 
 - Corrected GitHub Actions to `actions/checkout@v6` and `actions/setup-python@v6`.

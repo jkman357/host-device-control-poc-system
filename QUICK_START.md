@@ -23,6 +23,8 @@ python -m pip install -r requirements-validation.txt
 python tools/validate_project_repository.py
 python tools/validate_protocol_contract.py
 python tools/test_protocol_validator_regressions.py
+python tools/validate_transport_capacity.py
+python tools/test_transport_capacity_validator.py
 ```
 
 In a full Git clone, run the strict provenance form:
@@ -30,6 +32,8 @@ In a full Git clone, run the strict provenance form:
 ```powershell
 python tools/validate_protocol_contract.py --require-git-history
 ```
+
+The transport-capacity checks also enforce `validation/transport-capacity-policy.yaml`, including the 400-Hz limit and reserved UART headroom.
 
 The strict form verifies the pinned authority commit from local Git history. An extracted source ZIP has no `.git` directory, so it can validate the current contract and vectors but cannot independently prove historical commit provenance.
 

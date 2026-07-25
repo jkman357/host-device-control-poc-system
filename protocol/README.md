@@ -27,6 +27,8 @@ The current transport is 115200-bps UART using 8N1, which carries 10 wire bits f
 
 The Protocol intentionally limits configuration to `2500..60000 us`, corresponding to a maximum of 400 Hz and approximately 83.34% nominal TX utilization. The remaining bandwidth is reserved for ACK/NACK, status/error events, scheduling jitter, and recovery traffic. The PoC default remains `5000 us` / 200 Hz.
 
+The independent governance policy is recorded in [`../validation/transport-capacity-policy.yaml`](../validation/transport-capacity-policy.yaml). It fixes the approved admission boundary at no more than 85% nominal UART utilization and at least 15% reserved headroom. A Protocol edit that remains below the theoretical 480-Hz ceiling but exceeds this policy is rejected.
+
 The 400-Hz value is a Protocol admission limit, not hardware qualification evidence. Promotion beyond `candidate_for_alignment` still requires long-duration hardware measurements with zero unexpected loss and bounded command-response latency.
 
 ## Directory contents
@@ -51,9 +53,11 @@ From a full repository clone:
 ```text
 python tools/validate_protocol_contract.py --require-git-history
 python tools/test_protocol_validator_regressions.py
+python tools/validate_transport_capacity.py
+python tools/test_transport_capacity_validator.py
 ```
 
-The first command validates the current YAML contract, cross-file provenance records, field semantics, normative vectors, CRCs, and the pinned historical authority blob. The second command verifies that known validation bypasses remain rejected. Without Git history, omit `--require-git-history`; the tool will report that historical provenance was not verified.
+The first command validates the current YAML contract, cross-file provenance records, field semantics, normative vectors, CRCs, and the pinned historical authority blob. The second command verifies that known semantic and provenance bypasses remain rejected. The final two commands validate the UART capacity calculation and the separate headroom policy, including near-saturation regression cases. Without Git history, omit `--require-git-history`; the tool will report that historical provenance was not verified.
 
 ## Change procedure
 

@@ -1,0 +1,19 @@
+policy:
+  id: uart-115200-8n1-telemetry-headroom-v1
+  status: active
+  scope: protocol/transport_profile/st_link_vcp_uart
+  protocol_version: 0.1.0
+  wire_version: 0x01
+  transport_profile_name: st_link_vcp_uart
+  minimum_interval_us: 2500
+  maximum_stream_rate_hz: 400
+  maximum_nominal_tx_utilization_percent: 85.0
+  minimum_reserved_headroom_percent: 15.0
+  rationale: >-
+    The protocol limit shall reserve bounded UART capacity for ACK, NACK,
+    status, error, scheduling jitter, and recovery traffic instead of using
+    the telemetry-only theoretical maximum.
+  change_control: >-
+    Any change to this policy requires explicit system-level review, matching
+    Protocol and implementation updates, regression-test updates, and new
+    hardware qualification evidence.

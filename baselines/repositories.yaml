@@ -37,9 +37,9 @@ shared_contract:
   authority:
     repository: host-device-control-poc-system
     path: protocol/protocol.yaml
-    repository_commit: e4aa40b4d5dfc3e7f878f82f5a89115de9fe3679
+    repository_commit: b340645e6cb8fef9906aa7fecf22e2ca011a32bc
     repository_commit_status: pinned
-    file_sha256: 7ff8db3a1ed669407e0d4cada2a78b212ea3c7bccdf371f232a2689a02e7c56e
+    file_sha256: c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef
   protocol_version: 0.1.0
   wire_version: 0x01
   project_layer_ownership_status: active_candidate_authority

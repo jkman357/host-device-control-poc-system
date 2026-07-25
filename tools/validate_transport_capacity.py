@@ -14,11 +14,18 @@ import yaml
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    root = Path(__file__).resolve().parents[1]
     parser.add_argument(
         "--protocol",
         type=Path,
-        default=Path(__file__).resolve().parents[1] / "protocol" / "protocol.yaml",
+        default=root / "protocol" / "protocol.yaml",
         help="Path to protocol.yaml.",
+    )
+    parser.add_argument(
+        "--policy",
+        type=Path,
+        default=root / "validation" / "transport-capacity-policy.yaml",
+        help="Path to the system transport-capacity policy.",
     )
     return parser.parse_args()
 
@@ -60,7 +67,7 @@ def find_payload_field(message: dict[str, Any], name: str, errors: list[str]) ->
     return matches[0]
 
 
-def validate(protocol_path: Path) -> list[str]:
+def validate(protocol_path: Path, policy_path: Path) -> list[str]:
     errors: list[str] = []
     try:
         document = yaml.safe_load(protocol_path.read_text(encoding="utf-8"))
@@ -68,6 +75,14 @@ def validate(protocol_path: Path) -> list[str]:
         return [f"unable to load Protocol contract: {exc}"]
     if not isinstance(document, dict):
         return ["Protocol contract root shall be a mapping"]
+
+    try:
+        policy_document = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as exc:
+        return [f"unable to load transport-capacity policy: {exc}"]
+    if not isinstance(policy_document, dict):
+        return ["transport-capacity policy root shall be a mapping"]
+    policy = require_mapping(policy_document.get("policy"), "policy", errors)
 
     transport = require_mapping(document.get("transport_profile"), "transport_profile", errors)
     framing = require_mapping(document.get("framing"), "framing", errors)
@@ -262,12 +277,44 @@ def validate(protocol_path: Path) -> list[str]:
         if utilization >= 100.0:
             errors.append(f"protocol stream utilization {utilization:.2f}% leaves no transport headroom")
 
+        policy_maximum_utilization = policy.get("maximum_nominal_tx_utilization_percent")
+        if not isinstance(policy_maximum_utilization, (int, float)) or isinstance(policy_maximum_utilization, bool):
+            errors.append("policy.maximum_nominal_tx_utilization_percent shall be numeric")
+        elif utilization > float(policy_maximum_utilization) + 1e-9:
+            errors.append(
+                f"protocol stream utilization {utilization:.2f}% exceeds policy maximum "
+                f"{float(policy_maximum_utilization):.2f}%"
+            )
+
+        reserved_headroom = 100.0 - utilization
+        policy_minimum_headroom = policy.get("minimum_reserved_headroom_percent")
+        if not isinstance(policy_minimum_headroom, (int, float)) or isinstance(policy_minimum_headroom, bool):
+            errors.append("policy.minimum_reserved_headroom_percent shall be numeric")
+        elif reserved_headroom + 1e-9 < float(policy_minimum_headroom):
+            errors.append(
+                f"reserved transport headroom {reserved_headroom:.2f}% is below policy minimum "
+                f"{float(policy_minimum_headroom):.2f}%"
+            )
+
+    protocol_meta = require_mapping(document.get("protocol"), "protocol", errors)
+    expected_policy_values = {
+        "protocol_version": protocol_meta.get("version"),
+        "wire_version": protocol_meta.get("wire_version"),
+        "transport_profile_name": transport.get("name"),
+        "minimum_interval_us": minimum_interval,
+        "maximum_stream_rate_hz": protocol_maximum_rate,
+    }
+    for key, expected in expected_policy_values.items():
+        actual = policy.get(key)
+        if actual != expected:
+            errors.append(f"policy.{key} {actual!r} does not match Protocol value {expected!r}")
+
     return errors
 
 
 def main() -> int:
     args = parse_args()
-    errors = validate(args.protocol.resolve())
+    errors = validate(args.protocol.resolve(), args.policy.resolve())
     if errors:
         for error in errors:
             print(f"ERROR: {error}")

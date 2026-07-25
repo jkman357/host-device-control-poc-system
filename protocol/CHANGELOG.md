@@ -1,4 +1,11 @@
 # Protocol Changelog
+## Transport-capacity policy hardening — 2026-07-25
+
+- Pinned the unchanged candidate contract to system authority commit `b340645e6cb8fef9906aa7fecf22e2ca011a32bc`.
+- Added a separate system validation policy that limits nominal UART utilization to 85% and reserves at least 15% headroom.
+- Added regressions that reject internally consistent 401-Hz and 479-Hz edits, preventing the theoretical 480-Hz ceiling from being treated as an approved operating limit.
+- Kept Protocol version `0.1.0`, wire version `0x01`, and all encoded wire fields unchanged.
+
 ## Candidate transport-capacity correction — 2026-07-25
 
 - Corrected `SET_STREAM_CONFIG.interval_us` from `1000..60000` to `2500..60000`.

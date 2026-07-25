@@ -15,32 +15,35 @@ Last updated: 2026-07-25
 
 | Area | Status | Current conclusion |
 |---|---|---|
-| Framework and repository role mapping | PASS | The four upstream roles and the missing system/project integration layer are identified in this repository. |
-| Project baseline manifest | PASS | Exact initialization commits are recorded in `baselines/repositories.yaml`. |
+| Framework and repository role mapping | PASS | The four upstream roles and the system/project integration layer are identified in this repository. |
+| Project baseline manifest | PASS | Exact initialization commits and the Protocol authority identity are recorded in `baselines/repositories.yaml`. |
 | PC application source availability | PASS | WPF Coordinator, fake and serial transports, protocol tests, and build/run instructions are present at the pinned PC baseline. |
 | PC application local execution | OBSERVED | The application has been built and launched by the project owner; a formal execution record is not yet stored here. |
 | PC protocol self-tests | NOT RUN | Test capability exists in the PC repository; no system-repository evidence record has been imported. |
 | STM32 project source availability | PASS | A CubeIDE project exists at the pinned firmware baseline. |
-| STM32 application-layer implementation | IN PROGRESS | Recent Protocol/Transport work is not yet represented by a newer pinned GitHub baseline in this initial system record. |
+| STM32 application-layer implementation | IN PROGRESS | Recent Protocol/Transport work is not yet represented by a newer pinned system baseline. |
 | STM32 clean build and flash | OBSERVED | Build activity has been observed during development; reproducible baseline evidence is pending. |
-| Shared Protocol authority placement | PASS | `protocol/protocol.yaml` is now the project-level source of truth. |
-| Protocol authority provenance | PASS | CI uses a full Git checkout and verifies that commit `e4aa40b4d5dfc3e7f878f82f5a89115de9fe3679` exists, is an ancestor of `HEAD`, contains `protocol/protocol.yaml`, and matches the recorded historical SHA-256. |
-| Protocol contract validation | PASS | CI checks YAML structure, frame type/size/offset/endian consistency, IDs, sequence rules, response relationships, Git provenance, vectors, payload lengths, CRCs, and minimum command/response/event coverage. |
-| Protocol transport-capacity validation | PASS | CI derives UART wire capacity from 115200-bps 8N1 framing, verifies the 24-byte telemetry frame budget, enforces a minimum 2500-us interval / maximum 400-Hz rate, and rejects capacity regressions. |
-| Protocol validator regression tests | PASS | Thirteen regression cases reject malformed YAML, metadata/offset/hash errors, endian conflicts, type-size mismatch, sequence-rule mismatch, event-as-response misuse, missing strict-mode Git history, historical blob drift, and fake authority commits. |
+| Shared Protocol authority placement | PASS | `protocol/protocol.yaml` is the project-level source of truth. |
+| Protocol authority metadata | PASS | Both provenance records identify commit `b340645e6cb8fef9906aa7fecf22e2ca011a32bc` and SHA-256 `c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef`. |
+| Historical Protocol provenance | NOT RUN | The complete source ZIP has no `.git` directory. CI must run `validate_protocol_contract.py --require-git-history` after these files are committed to verify that `b340645` is an ancestor and contains the identical Protocol blob. |
+| Protocol contract validation | PASS | Local source-package validation checks YAML structure, framing semantics, IDs, sequence rules, response relationships, cross-file hashes, vectors, payload lengths, and CRCs. |
+| Protocol transport-capacity validation | PASS | Local validation derives the 115200-bps 8N1 budget, verifies the 24-byte telemetry frame, enforces 2500 us / 400 Hz, and applies the separate 85%-utilization / 15%-headroom policy. |
+| Protocol validator regression tests | PASS | Fourteen semantic/provenance regression cases were executed locally and rejected malformed or inconsistent inputs. |
+| Transport-capacity regression tests | PASS | Seven cases were executed locally, including 401-Hz and 479-Hz policy-bypass attempts. |
+| GitHub Actions for the replacement commit | NOT RUN | This ZIP has not yet been committed or pushed; no CI result is claimed. |
 | PC fake-device streaming | OBSERVED | PC repository supports fake-device streaming; formal system evidence is pending. |
-| Protocol implementation alignment | BLOCKED | Current compiled STM32 framing and message model differ from the project candidate; see `protocol/IMPLEMENTATION_ALIGNMENT.md`. |
+| Protocol implementation alignment | BLOCKED | Current pinned STM32 and PC baselines have not yet been reverified against the corrected authority; see `protocol/IMPLEMENTATION_ALIGNMENT.md`. |
 | PC-to-MCU command/response | NOT RUN | No indexed hardware execution record yet. |
 | 5 ms / 200 Hz hardware telemetry | NOT RUN | No indexed timing capture yet. |
 | Sequence and loss detection | NOT RUN | No indexed hardware stress result yet. |
-| CRC rejection and resynchronization on hardware | NOT RUN | PC component tests exist; target behavior is unverified. |
+| CRC rejection and resynchronization on hardware | NOT RUN | Target behavior remains unverified. |
 | Long-duration streaming | NOT RUN | Duration and acceptance thresholds remain to be approved. |
 | Framework conformance claim | NOT CLAIMED | No conformance conclusion is made by this repository. |
 | Production readiness | NOT CLAIMED | This remains an engineering PoC. |
 
 ## Next Evidence-Producing Milestone
 
-Pin and push the next STM32 firmware baseline, then execute a minimal end-to-end sequence:
+Commit and push this replacement tree, confirm the strict Git-history CI check, then synchronize the STM32 and PC implementations to the pinned Protocol authority. After both implementation commits are pinned, execute:
 
 ```text
 PING → GET_DEVICE_INFO → SET_STREAM_CONFIG(5000 us)
