@@ -1,4 +1,14 @@
 # Protocol Changelog
+## Candidate transport-capacity correction — 2026-07-25
+
+- Corrected `SET_STREAM_CONFIG.interval_us` from `1000..60000` to `2500..60000`.
+- Defined a protocol maximum of 400 Hz for the 24-byte telemetry frame over 115200-bps UART with 8N1 framing.
+- Added an explicit UART capacity budget and reserved headroom for command responses, status/error traffic, scheduling jitter, and recovery.
+- Required `DEVICE_INFO.maximum_stream_rate_hz` to report no more than 400 Hz.
+- Added automated transport-capacity validation and regression coverage.
+
+The default remains 5000 us / 200 Hz. No field width, field order, message ID, CRC, endian, or encoded frame changes were made, so wire version `0x01` remains unchanged. Protocol version `0.1.0` remains a candidate identifier because no verified baseline has been promoted; the exact authority is identified by commit and SHA-256.
+
 
 ## 0.1.0 — Candidate for alignment — 2026-07-25
 

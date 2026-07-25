@@ -15,6 +15,7 @@ The project-level contract is now located in this repository, but the available 
 | PROTO-GAP-005 | Candidate message IDs include `0x01..0x05`, `0x80..0x91` | Compiled MCU uses a different 16-bit message namespace, including telemetry `0x2000` | Align IDs and response model |
 | PROTO-GAP-006 | Candidate maximum payload is 1024 bytes | Compiled MCU parser limit is 48 bytes | Approve one project requirement and implement it consistently |
 | PROTO-GAP-007 | Candidate uses generic `ACK` / `NACK` | Compiled MCU includes command-specific response IDs and an error response | Align response semantics and vectors |
+| PROTO-GAP-008 | Stream interval is `2500..60000 us`; reported maximum is at most 400 Hz | Any PC or MCU implementation accepting 1000 us or reporting 1000 Hz exceeds the 115200-bps transport budget | Update both implementations only after this contract correction is committed and pinned |
 
 ## Rule
 

@@ -21,6 +21,14 @@ A candidate becomes a verified baseline only when all of the following agree:
 6. pinned PC, MCU, and system-repository commits; and
 7. human approval recorded in this repository.
 
+## Stream timing limit
+
+The current transport is 115200-bps UART using 8N1, which carries 10 wire bits for each byte. A `TELEMETRY_SAMPLE` contains 14 payload bytes and 10 framing bytes, for a 24-byte / 240-bit frame. The telemetry-only theoretical ceiling is therefore 480 frames per second.
+
+The Protocol intentionally limits configuration to `2500..60000 us`, corresponding to a maximum of 400 Hz and approximately 83.34% nominal TX utilization. The remaining bandwidth is reserved for ACK/NACK, status/error events, scheduling jitter, and recovery traffic. The PoC default remains `5000 us` / 200 Hz.
+
+The 400-Hz value is a Protocol admission limit, not hardware qualification evidence. Promotion beyond `candidate_for_alignment` still requires long-duration hardware measurements with zero unexpected loss and bounded command-response latency.
+
 ## Directory contents
 
 ```text

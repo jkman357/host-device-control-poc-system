@@ -32,9 +32,11 @@ transport_profile:
   name: st_link_vcp_uart
   physical_path: st_link_virtual_com_port
   baud_rate_bps: 115200
+  start_bits: 1
   data_bits: 8
   parity: none
   stop_bits: 1
+  wire_bits_per_byte: 10
   flow_control: none
   duplex: full_duplex
 
@@ -88,6 +90,24 @@ framing:
     invalid_length: discard_candidate_and_search_next_sof
     unsupported_version: reject_decodable_request
     partial_frame_timeout: discard_partial_frame
+
+stream_capacity:
+  telemetry_message: TELEMETRY_SAMPLE
+  telemetry_payload_size_bytes: 14
+  telemetry_frame_size_bytes: 24
+  theoretical_maximum_rate_hz: 480
+  protocol_maximum_rate_hz: 400
+  minimum_interval_us: 2500
+  maximum_nominal_tx_utilization_percent: 83.34
+  calculation:
+    usable_uart_bytes_per_second: 11520
+    telemetry_wire_bits_per_frame: 240
+    theoretical_interval_floor_us: 2084
+  reservation_rule: >-
+    The protocol maximum shall remain below the telemetry-only UART limit so that
+    ACK, NACK, status, error, scheduling jitter, and recovery traffic retain bounded
+    transmission capacity.
+  verification_status: protocol_limit_pending_hardware_qualification
 
 sequence_rules:
   host_command:
@@ -143,8 +163,9 @@ messages:
       - name: interval_us
         type: uint16
         unit: microsecond
-        valid_range: [1000, 60000]
+        valid_range: [2500, 60000]
         poc_default: 5000
+        maximum_rate_hz: 400
     valid_responses: [ACK, NACK]
 
   - name: START_STREAM
@@ -209,6 +230,8 @@ messages:
         type: uint8
       - name: maximum_stream_rate_hz
         type: uint16
+        maximum_allowed_value: 400
+        rule: shall_not_exceed_stream_capacity.protocol_maximum_rate_hz
       - name: device_name_length
         type: uint8
       - name: device_name
