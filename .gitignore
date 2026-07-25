@@ -1,0 +1,8 @@
+# Evidence payloads may be intentionally excluded until reviewed.
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+__pycache__/

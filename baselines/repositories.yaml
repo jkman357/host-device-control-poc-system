@@ -1,0 +1,43 @@
+baseline:
+  id: poc-system-initial-2026-07-25
+  status: draft_project_baseline
+  captured_date: 2026-07-25
+  purpose: initial cross-repository project and validation framework
+
+repositories:
+  - role: reusable_framework_authority
+    name: host-device-control-framework
+    url: https://github.com/jkman357/host-device-control-framework
+    branch: main
+    commit: 7a68980ef5faa2e897a3574af121683d65f74638
+    initialization_state: reviewed_for_role_and_structure
+
+  - role: reusable_project_template
+    name: host-device-control-project-template
+    url: https://github.com/jkman357/host-device-control-project-template
+    branch: main
+    commit: 491816c07390066221b6fbdbc413364626722e6b
+    initialization_state: used_as_structural_reference
+
+  - role: node_firmware_implementation
+    name: host-device-control-poc-stm32f446re-fw
+    url: https://github.com/jkman357/host-device-control-poc-stm32f446re-fw
+    branch: main
+    commit: 31d6cafc154ef90f4c5d556c91a19650c8aa9a14
+    initialization_state: cubeide_project_present_application_integration_in_progress
+
+  - role: coordinator_pc_implementation
+    name: host-device-control-poc-pc-app
+    url: https://github.com/jkman357/host-device-control-poc-pc-app
+    branch: main
+    commit: 84bbc16f02a864084b1270db40b58460ad691e35
+    initialization_state: wpf_poc_baseline_present
+
+shared_contract:
+  current_location:
+    repository: host-device-control-poc-pc-app
+    path: protocol/protocol.yaml
+    commit: 84bbc16f02a864084b1270db40b58460ad691e35
+  protocol_version: 0.1.0
+  wire_version: 0x01
+  project_layer_ownership_status: proposed_migration_or_controlled_sync

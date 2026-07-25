@@ -1,0 +1,77 @@
+test_plan:
+  id: hdc-poc-system-vv-initial
+  revision: 0.1.0
+  status: draft
+
+cases:
+  - id: REPO-001
+    title: Verify pinned repository identities
+    method: inspection
+    expected: all required repositories have exact 40-character commit identities
+    status: ready
+
+  - id: PC-001
+    title: Build PC application in Release configuration
+    method: execution
+    expected: restore and build complete without errors
+    status: ready
+
+  - id: PC-002
+    title: Run PC protocol self-tests
+    method: execution
+    expected: all executable protocol checks pass
+    status: ready
+
+  - id: PC-003
+    title: Run fake-device telemetry flow
+    method: execution
+    expected: connect, start stream, waveform, counters, and stop stream behave as specified
+    status: ready
+
+  - id: FW-001
+    title: Clean-build STM32 firmware
+    method: execution
+    expected: identified CubeIDE/toolchain build completes without errors
+    status: blocked_pending_pinned_application_commit
+
+  - id: FW-002
+    title: Flash and boot NUCLEO-F446RE
+    method: execution
+    expected: flash succeeds and firmware reaches defined idle state
+    status: blocked_pending_fw_001
+
+  - id: PROTO-001
+    title: Compare C# and C encoded golden frames
+    method: cross_language_comparison
+    expected: byte-for-byte equality for all controlled vectors
+    status: blocked_pending_mcu_protocol_implementation
+
+  - id: INT-001
+    title: Execute minimal command sequence over ST-LINK VCP
+    method: hardware_integration
+    expected: PING, device info, stream configuration, start, telemetry, and stop complete correctly
+    status: blocked_pending_component_readiness
+
+  - id: PERF-001
+    title: Measure nominal telemetry interval
+    method: timing_measurement
+    expected: acceptance thresholds to be approved before execution
+    status: blocked_pending_acceptance_criteria
+
+  - id: PERF-002
+    title: Measure long-duration loss and UI responsiveness
+    method: endurance_measurement
+    expected: duration and acceptance thresholds to be approved before execution
+    status: blocked_pending_acceptance_criteria
+
+  - id: FAULT-001
+    title: Reject invalid CRC and resynchronize
+    method: fault_injection
+    expected: invalid frame is rejected and next valid frame is recovered
+    status: blocked_pending_hardware_integration
+
+  - id: FAULT-002
+    title: Characterize disconnect and MCU reset behavior
+    method: fault_injection
+    expected: observed state, timeout, stale-data behavior, and recovery limits are recorded
+    status: blocked_pending_hardware_integration
