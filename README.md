@@ -29,9 +29,9 @@ It does **not**:
 
 ## Current Status
 
-`v0.1.4 — Protocol Authority Pinning and Capacity-Policy Hardening`
+`v0.1.5 — CI Regression-Fixture Isolation`
 
-The repository structure, Protocol authority, provenance metadata pinned to `b340645`, semantic contract validation, explicit UART headroom policy, Git-history provenance verification in CI, and expanded validator regression coverage are established. PC and STM32 implementations are still being aligned to the candidate contract, so end-to-end evidence remains incomplete.
+The repository structure, Protocol authority, provenance metadata pinned to `b340645`, semantic contract validation, explicit UART headroom policy, and Git-history provenance verification are established. Protocol regression fixtures now exclude the caller repository `.git` directory and the fake-commit case starts from a verified synthetic two-commit provenance baseline. PC and STM32 implementations are still being aligned to the candidate contract, so end-to-end evidence remains incomplete.
 
 See:
 

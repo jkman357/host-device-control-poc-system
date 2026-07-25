@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.5 — 2026-07-25
+
+- Fixed Protocol regression fixtures so `.git`, Python bytecode, and test caches are never copied from the caller checkout into temporary repositories.
+- Added an explicit assertion that a fixture intended to have no Git history does not contain a `.git` directory.
+- Reworked the fake-authority-commit regression to first create and validate a synthetic two-commit authority/provenance history, then mutate both provenance records to the exact fake commit under test.
+- Tightened the fake-commit diagnostic assertion to include the full rejected 40-character commit identity, preventing unrelated missing-commit failures from producing a false PASS.
+- Replaced static, quickly stale GitHub Actions status claims with `CI-GATED` wording; dynamic CI results remain in the repository Actions history.
+- Preserved `protocol/protocol.yaml`, the 2500-us / 400-Hz capacity boundary, the 85% utilization policy, Protocol version `0.1.0`, wire version `0x01`, and provenance pinned to `b340645`.
+
 ## v0.1.4 — 2026-07-25
 
 - Pinned the unchanged Protocol contract to authority commit `b340645e6cb8fef9906aa7fecf22e2ca011a32bc` and SHA-256 `c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef`.

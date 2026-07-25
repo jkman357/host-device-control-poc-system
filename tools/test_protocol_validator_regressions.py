@@ -16,6 +16,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = ROOT / "tools" / "validate_protocol_contract.py"
 Mutator = Callable[[Path], None]
+COPY_IGNORE = shutil.ignore_patterns(".git", "__pycache__", "*.pyc", ".pytest_cache")
+FAKE_COMMIT = "f" * 40
 
 
 def run_validator(root: Path, strict: bool = False) -> subprocess.CompletedProcess[str]:
@@ -23,6 +25,27 @@ def run_validator(root: Path, strict: bool = False) -> subprocess.CompletedProce
     if strict:
         command.append("--require-git-history")
     return subprocess.run(command, check=False, capture_output=True, text=True)
+
+
+def run_git(root: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(root), *arguments],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+
+def require_git_success(root: Path, *arguments: str) -> str:
+    result = run_git(root, *arguments)
+    if result.returncode != 0:
+        command = " ".join(("git", "-C", str(root), *arguments))
+        raise AssertionError(
+            f"fixture Git command failed: {command}\n"
+            f"stdout:\n{result.stdout}\n"
+            f"stderr:\n{result.stderr}"
+        )
+    return result.stdout.strip()
 
 
 def load_yaml(path: Path) -> dict:
@@ -36,16 +59,61 @@ def save_yaml(path: Path, value: dict) -> None:
     path.write_text(yaml.safe_dump(value, sort_keys=False), encoding="utf-8")
 
 
-def expect_failure(name: str, mutator: Mutator, expected: str, strict: bool = False, initialize_git: bool = False) -> None:
+def set_authority_commit(root: Path, commit: str) -> None:
+    for relative, keys in [
+        ("baselines/repositories.yaml", ("shared_contract", "authority", "repository_commit")),
+        ("protocol/implementation-status.yaml", ("protocol_contract", "system_repository_commit")),
+    ]:
+        path = root / relative
+        value = load_yaml(path)
+        target = value
+        for key in keys[:-1]:
+            target = target[key]
+        target[keys[-1]] = commit
+        save_yaml(path, value)
+
+
+def initialize_valid_git_history(root: Path) -> None:
+    """Create a valid two-commit provenance fixture before negative mutation."""
+    require_git_success(root, "init", "-q")
+    require_git_success(root, "config", "user.email", "ci@example.invalid")
+    require_git_success(root, "config", "user.name", "CI")
+    require_git_success(root, "add", ".")
+    require_git_success(root, "commit", "-qm", "authority fixture")
+    authority_commit = require_git_success(root, "rev-parse", "HEAD")
+
+    set_authority_commit(root, authority_commit)
+    require_git_success(
+        root,
+        "add",
+        "baselines/repositories.yaml",
+        "protocol/implementation-status.yaml",
+    )
+    require_git_success(root, "commit", "-qm", "pin authority fixture")
+
+    baseline = run_validator(root, strict=True)
+    if baseline.returncode != 0:
+        raise AssertionError(
+            "synthetic two-commit provenance baseline shall pass before mutation\n"
+            f"stdout:\n{baseline.stdout}\n"
+            f"stderr:\n{baseline.stderr}"
+        )
+
+
+def expect_failure(
+    name: str,
+    mutator: Mutator,
+    expected: str,
+    strict: bool = False,
+    initialize_valid_history: bool = False,
+) -> None:
     with tempfile.TemporaryDirectory(prefix="protocol-regression-") as temp_dir:
         root = Path(temp_dir) / "repo"
-        shutil.copytree(ROOT, root, ignore=shutil.ignore_patterns("__pycache__"))
-        if initialize_git:
-            subprocess.run(["git", "init", "-q", str(root)], check=True)
-            subprocess.run(["git", "-C", str(root), "config", "user.email", "ci@example.invalid"], check=True)
-            subprocess.run(["git", "-C", str(root), "config", "user.name", "CI"], check=True)
-            subprocess.run(["git", "-C", str(root), "add", "."], check=True)
-            subprocess.run(["git", "-C", str(root), "commit", "-qm", "fixture"], check=True)
+        shutil.copytree(ROOT, root, ignore=COPY_IGNORE)
+        if (root / ".git").exists():
+            raise AssertionError(f"{name}: fixture unexpectedly contains .git history")
+        if initialize_valid_history:
+            initialize_valid_git_history(root)
         mutator(root)
         result = run_validator(root, strict=strict)
         combined = result.stdout + result.stderr
@@ -152,17 +220,7 @@ def no_change(root: Path) -> None:
 
 
 def fake_authority_commit(root: Path) -> None:
-    for relative, keys in [
-        ("baselines/repositories.yaml", ("shared_contract", "authority", "repository_commit")),
-        ("protocol/implementation-status.yaml", ("protocol_contract", "system_repository_commit")),
-    ]:
-        path = root / relative
-        value = load_yaml(path)
-        target = value
-        for key in keys[:-1]:
-            target = target[key]
-        target[keys[-1]] = "f" * 40
-        save_yaml(path, value)
+    set_authority_commit(root, FAKE_COMMIT)
 
 
 def main() -> int:
@@ -187,10 +245,16 @@ def main() -> int:
         ("CRC parameter drift", crc_parameters, "CRC polynomial shall be 0x1021", False, False),
         ("unknown response name", unknown_response, "references unknown response: NOT_DEFINED", False, False),
         ("missing Git history in strict mode", no_change, "Git history is unavailable", True, False),
-        ("fake authority commit", fake_authority_commit, "pinned authority commit does not exist", True, True),
+        (
+            "fake authority commit",
+            fake_authority_commit,
+            f"pinned authority commit does not exist in local Git history: {FAKE_COMMIT}",
+            True,
+            True,
+        ),
     ]
-    for name, mutator, expected, strict, initialize_git in cases:
-        expect_failure(name, mutator, expected, strict, initialize_git)
+    for name, mutator, expected, strict, initialize_valid_history in cases:
+        expect_failure(name, mutator, expected, strict, initialize_valid_history)
 
     print("Protocol validator regression tests passed.")
     return 0

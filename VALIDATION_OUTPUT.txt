@@ -1,6 +1,6 @@
-Host-Device Control PoC System v0.1.4 validation
+Host-Device Control PoC System v0.1.5 validation
 Execution date: 2026-07-25
-Execution scope: complete replacement source tree derived from b340645
+Execution scope: complete replacement source tree derived from 8534b8c
 
 Commands executed
 =================
@@ -35,6 +35,11 @@ Commands executed
      - unknown response name
      - missing Git history in strict mode
      - fake authority commit
+   Fixture controls:
+     - caller .git history, Python bytecode, and test caches are excluded
+     - the no-history case asserts that no .git directory was copied
+     - the fake-commit case starts from a strict-valid synthetic two-commit history
+     - the expected diagnostic includes the exact rejected fake commit identity
 
 5. python tools/validate_transport_capacity.py
    Result: PASS
@@ -58,6 +63,19 @@ Commands executed
      - overstated DEVICE_INFO capability
      - policy-only weakening
 
+7. Full-checkout regression simulation
+   Result: PASS
+   Method:
+     - copied the complete source tree to a temporary directory
+     - initialized a synthetic Git repository
+     - created an authority commit containing the current Protocol blob
+     - created a second commit pinning both provenance records to that authority
+     - passed strict Git-history Protocol validation
+     - ran all 14 Protocol regression cases from a checkout that contained .git
+   Purpose:
+     - verifies that temporary regression fixtures do not inherit the caller checkout .git directory
+     - verifies that the fake-commit case cannot pass because of an invalid starting history
+
 Protocol authority identity
 ===========================
 
@@ -67,22 +85,23 @@ Authority commit:
 Protocol SHA-256:
   c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef
 
-The replacement package keeps protocol/protocol.yaml byte-identical to the
-b340645 authority blob and updates both provenance metadata files to this
-commit and SHA-256.
+protocol/protocol.yaml remains byte-identical to the b340645 authority blob.
+The 2500-us / 400-Hz contract and the separate 85%-utilization /
+15%-headroom policy are unchanged.
 
-Not executed in the extracted source package
-============================================
+Not executed against the real repository history in this ZIP
+============================================================
 
 python tools/validate_protocol_contract.py --require-git-history
 
-Reason: a ZIP does not contain the repository .git history. This strict check
-shall be executed by GitHub Actions after the replacement tree is committed
-and pushed. No CI PASS is claimed by this file.
+Reason: a ZIP does not contain the repository .git history. The synthetic
+full-checkout simulation validates test-fixture behavior, but it does not
+replace the GitHub Actions check that b340645 is an ancestor of the actual
+replacement commit and contains the recorded Protocol blob.
 
 Hardware and implementation alignment
 =====================================
 
-NOT RUN. This package corrects the system authority, provenance, validation
-policy, validators, regression tests, and documentation. It does not establish
-PC/MCU implementation alignment or hardware interoperability evidence.
+NOT RUN. This package corrects CI regression-fixture isolation and fake-commit
+test validity. It does not establish PC/MCU implementation alignment or
+hardware interoperability evidence.
