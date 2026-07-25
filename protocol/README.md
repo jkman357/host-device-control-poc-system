@@ -35,6 +35,18 @@ protocol/
     └── protocol-v0.1.0-vectors.json
 ```
 
+
+## Contract validation
+
+From a full repository clone:
+
+```text
+python tools/validate_protocol_contract.py --require-git-history
+python tools/test_protocol_validator_regressions.py
+```
+
+The first command validates the current YAML contract, cross-file provenance records, field semantics, normative vectors, CRCs, and the pinned historical authority blob. The second command verifies that known validation bypasses remain rejected. Without Git history, omit `--require-git-history`; the tool will report that historical provenance was not verified.
+
 ## Change procedure
 
 1. Change `protocol.yaml` first.

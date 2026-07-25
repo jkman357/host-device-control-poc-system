@@ -24,9 +24,9 @@ Last updated: 2026-07-25
 | STM32 application-layer implementation | IN PROGRESS | Recent Protocol/Transport work is not yet represented by a newer pinned GitHub baseline in this initial system record. |
 | STM32 clean build and flash | OBSERVED | Build activity has been observed during development; reproducible baseline evidence is pending. |
 | Shared Protocol authority placement | PASS | `protocol/protocol.yaml` is now the project-level source of truth. |
-| Protocol authority provenance | PASS | The authoritative Protocol file and its SHA-256 are pinned to system commit `e4aa40b4d5dfc3e7f878f82f5a89115de9fe3679`. |
-| Protocol contract validation | PASS | YAML structure, field layout, IDs, provenance, vectors, metadata, payload lengths, CRCs, and minimum command/response/event coverage are checked by CI. |
-| Protocol validator regression tests | PASS | Known malformed-YAML, metadata, framing-offset, and stale-hash bypasses are rejected. |
+| Protocol authority provenance | PASS | CI uses a full Git checkout and verifies that commit `e4aa40b4d5dfc3e7f878f82f5a89115de9fe3679` exists, is an ancestor of `HEAD`, contains `protocol/protocol.yaml`, and matches the recorded historical SHA-256. |
+| Protocol contract validation | PASS | CI checks YAML structure, frame type/size/offset/endian consistency, IDs, sequence rules, response relationships, Git provenance, vectors, payload lengths, CRCs, and minimum command/response/event coverage. |
+| Protocol validator regression tests | PASS | Thirteen regression cases reject malformed YAML, metadata/offset/hash errors, endian conflicts, type-size mismatch, sequence-rule mismatch, event-as-response misuse, missing strict-mode Git history, historical blob drift, and fake authority commits. |
 | PC fake-device streaming | OBSERVED | PC repository supports fake-device streaming; formal system evidence is pending. |
 | Protocol implementation alignment | BLOCKED | Current compiled STM32 framing and message model differ from the project candidate; see `protocol/IMPLEMENTATION_ALIGNMENT.md`. |
 | PC-to-MCU command/response | NOT RUN | No indexed hardware execution record yet. |

@@ -24,6 +24,7 @@ REQUIRED_FILES = [
     "LICENSE",
     "NOTICE.md",
     "requirements-validation.txt",
+    ".github/workflows/project-validation.yml",
     "baselines/repositories.yaml",
     "docs/Approval_Records.md",
     "docs/Decision_Log.md",
@@ -129,6 +130,20 @@ def main() -> int:
                 if "project_layer_ownership_status" not in shared_contract:
                     fail("shared Protocol ownership status is not recorded")
                     errors += 1
+
+    workflow_path = ROOT / ".github" / "workflows" / "project-validation.yml"
+    workflow_text = workflow_path.read_text(encoding="utf-8") if workflow_path.is_file() else ""
+    required_workflow_markers = [
+        "uses: actions/checkout@v6",
+        "fetch-depth: 0",
+        "uses: actions/setup-python@v6",
+        "python tools/validate_protocol_contract.py --require-git-history",
+        "python tools/test_protocol_validator_regressions.py",
+    ]
+    for marker in required_workflow_markers:
+        if marker not in workflow_text:
+            fail(f"GitHub Actions workflow marker is missing: {marker}")
+            errors += 1
 
     result_path = ROOT / "docs" / "VV_Results.md"
     result_text = result_path.read_text(encoding="utf-8") if result_path.is_file() else ""

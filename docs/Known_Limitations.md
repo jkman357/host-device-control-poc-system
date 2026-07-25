@@ -23,3 +23,7 @@
 ## Claim Boundary
 
 The current deliverable may be described as an **initial Host-Device Control PoC project and validation framework**. It shall not be described as a validated product, certified reference design, production-ready system, or proven Framework-conformant implementation.
+
+## Git Provenance Validation Outside a Clone
+
+A source ZIP does not contain `.git` history. In an extracted ZIP, `tools/validate_protocol_contract.py` validates the current Protocol file, manifests, vectors, and semantic consistency, but reports that historical commit provenance was not verified. CI runs the validator with `--require-git-history` after `fetch-depth: 0`; that strict mode is the authoritative provenance check.

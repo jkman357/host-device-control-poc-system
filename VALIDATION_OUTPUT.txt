@@ -1,0 +1,36 @@
+Host-Device Control PoC System v0.1.3 validation
+Date: 2026-07-25
+
+[1] Python syntax compilation
+Python validation tools compiled successfully.
+
+[2] Project repository validation
+Project repository validation passed.
+
+[3] Protocol contract validation in source-package mode
+NOTICE: Git history is unavailable; pinned authority commit provenance was not verified. Run from a full checkout with --require-git-history for CI-grade validation.
+Protocol contract, provenance, and vectors validated.
+
+[4] Protocol validator regression tests
+PASS: invalid YAML rejected
+PASS: vector metadata mismatch rejected
+PASS: frame offset mismatch rejected
+PASS: stale Protocol SHA rejected
+PASS: sequence field endian conflict rejected
+PASS: CRC field endian conflict rejected
+PASS: field type-size mismatch rejected
+PASS: sequence width mismatch rejected
+PASS: event accepted as direct response rejected
+PASS: response sequence rule conflict rejected
+PASS: required Git history absence rejected
+PASS: historical Protocol blob mismatch rejected
+PASS: fake authority commit rejected
+Protocol validator regression tests passed.
+
+[5] Authority Protocol byte comparison
+7ff8db3a1ed669407e0d4cada2a78b212ea3c7bccdf371f232a2689a02e7c56e  /mnt/data/e4aa40b-protocol.yaml
+7ff8db3a1ed669407e0d4cada2a78b212ea3c7bccdf371f232a2689a02e7c56e  /mnt/data/host-device-control-poc-system-v0.1.3/protocol/protocol.yaml
+The GitHub e4aa40b authority blob and packaged protocol/protocol.yaml are byte-identical.
+
+Note: Strict historical provenance is configured in CI with fetch-depth: 0 and --require-git-history.
+A source ZIP does not contain .git history; the regression suite verifies the strict Git-provenance code path using temporary Git repositories.

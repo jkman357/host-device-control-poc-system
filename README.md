@@ -29,9 +29,9 @@ It does **not**:
 
 ## Current Status
 
-`v0.1.2 — Protocol Authority Validation Hardening`
+`v0.1.3 — Protocol Provenance and Semantic Validation Hardening`
 
-The repository structure, Protocol authority, pinned authority provenance, semantic contract validation, and validator regression coverage are established. PC and STM32 implementations are still being aligned to the candidate contract, so end-to-end evidence remains incomplete.
+The repository structure, Protocol authority, pinned authority provenance, semantic contract validation, Git-history provenance verification in CI, and expanded validator regression coverage are established. PC and STM32 implementations are still being aligned to the candidate contract, so end-to-end evidence remains incomplete.
 
 See:
 
