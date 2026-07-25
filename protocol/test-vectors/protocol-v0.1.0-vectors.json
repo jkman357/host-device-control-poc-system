@@ -14,6 +14,13 @@
       "frame_hex": "A55A0101010000005597"
     },
     {
+      "name": "ack_ping_sequence_1",
+      "message_id": "0x80",
+      "sequence": 1,
+      "payload_hex": "010000",
+      "frame_hex": "A55A018001000300010000536F"
+    },
+    {
       "name": "set_stream_config_5000us_sequence_0x1234",
       "message_id": "0x03",
       "sequence": 4660,

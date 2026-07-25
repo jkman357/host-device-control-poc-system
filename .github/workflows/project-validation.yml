@@ -11,11 +11,15 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+      - name: Install validation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-validation.txt
       - name: Validate project repository
         run: python tools/validate_project_repository.py
       - name: Validate Protocol contract
         run: python tools/validate_protocol_contract.py
+      - name: Run Protocol validator regression tests
+        run: python tools/test_protocol_validator_regressions.py

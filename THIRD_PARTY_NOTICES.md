@@ -34,3 +34,14 @@ The following notice is preserved for those template-derived portions:
 > SOFTWARE.
 
 Project-specific additions and modifications in this repository remain subject to this repository's `LICENSE`, except where another file or notice explicitly states otherwise.
+
+## PyYAML
+
+Repository validation uses PyYAML as a development/CI dependency:
+
+- Project: PyYAML
+- Version: 6.0.3
+- Source: https://github.com/yaml/pyyaml
+- License: MIT License
+
+PyYAML is not copied into this repository. Installation and use remain subject to its own license and terms.

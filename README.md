@@ -29,9 +29,9 @@ It does **not**:
 
 ## Current Status
 
-`v0.1.0 — Initial Project and Validation Framework`
+`v0.1.2 — Protocol Authority Validation Hardening`
 
-The repository structure and current upstream baselines are established. PC-side implementation and self-test capabilities exist. STM32 firmware and hardware integration are still being developed. End-to-end evidence is therefore incomplete.
+The repository structure, Protocol authority, pinned authority provenance, semantic contract validation, and validator regression coverage are established. PC and STM32 implementations are still being aligned to the candidate contract, so end-to-end evidence remains incomplete.
 
 See:
 

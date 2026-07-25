@@ -6,8 +6,12 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
+from typing import Any
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+FULL_SHA_PATTERN = re.compile(r"^[0-9a-f]{40}$")
 
 REQUIRED_FILES = [
     "README.md",
@@ -19,6 +23,7 @@ REQUIRED_FILES = [
     "VALIDATION_STATUS.md",
     "LICENSE",
     "NOTICE.md",
+    "requirements-validation.txt",
     "baselines/repositories.yaml",
     "docs/Approval_Records.md",
     "docs/Decision_Log.md",
@@ -36,6 +41,8 @@ REQUIRED_FILES = [
     "protocol/IMPLEMENTATION_ALIGNMENT.md",
     "protocol/implementation-status.yaml",
     "protocol/test-vectors/protocol-v0.1.0-vectors.json",
+    "tools/validate_protocol_contract.py",
+    "tools/test_protocol_validator_regressions.py",
 ]
 
 EXPECTED_REPOSITORIES = {
@@ -45,12 +52,17 @@ EXPECTED_REPOSITORIES = {
     "host-device-control-poc-pc-app",
 }
 
-SHA_PATTERN = re.compile(r"^\s*commit:\s*([0-9a-f]{40})\s*$", re.MULTILINE)
-NAME_PATTERN = re.compile(r"^\s*name:\s*([a-z0-9-]+)\s*$", re.MULTILINE)
-
 
 def fail(message: str) -> None:
     print(f"ERROR: {message}")
+
+
+def load_yaml(path: Path) -> Any:
+    try:
+        return yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as exc:
+        fail(f"{path.relative_to(ROOT)} is invalid YAML: {exc}")
+        return None
 
 
 def main() -> int:
@@ -62,26 +74,64 @@ def main() -> int:
             fail(f"missing required file: {relative}")
             errors += 1
 
-    baseline_path = ROOT / "baselines/repositories.yaml"
+    baseline_path = ROOT / "baselines" / "repositories.yaml"
     if baseline_path.is_file():
-        text = baseline_path.read_text(encoding="utf-8")
-        commits = SHA_PATTERN.findall(text)
-        names = set(NAME_PATTERN.findall(text))
-
-        if len(commits) < 4:
-            fail("baseline manifest shall contain at least four full 40-character commits")
+        baseline = load_yaml(baseline_path)
+        if not isinstance(baseline, dict):
+            fail("baseline manifest root shall be a mapping")
             errors += 1
+        else:
+            repositories = baseline.get("repositories")
+            if not isinstance(repositories, list):
+                fail("baseline repositories shall be a list")
+                errors += 1
+            else:
+                names: set[str] = set()
+                for index, repository in enumerate(repositories):
+                    if not isinstance(repository, dict):
+                        fail(f"baseline repositories[{index}] shall be a mapping")
+                        errors += 1
+                        continue
+                    name = repository.get("name")
+                    commit = repository.get("commit")
+                    if isinstance(name, str):
+                        names.add(name)
+                    else:
+                        fail(f"baseline repositories[{index}].name shall be a string")
+                        errors += 1
+                    if not isinstance(commit, str) or not FULL_SHA_PATTERN.fullmatch(commit):
+                        fail(f"baseline repository {name or index} commit shall be a full lowercase 40-character SHA")
+                        errors += 1
 
-        missing_names = EXPECTED_REPOSITORIES - names
-        if missing_names:
-            fail("baseline manifest missing repositories: " + ", ".join(sorted(missing_names)))
-            errors += 1
+                missing_names = EXPECTED_REPOSITORIES - names
+                if missing_names:
+                    fail("baseline manifest missing repositories: " + ", ".join(sorted(missing_names)))
+                    errors += 1
 
-        if "project_layer_ownership_status:" not in text:
-            fail("shared Protocol ownership status is not recorded")
-            errors += 1
+            shared_contract = baseline.get("shared_contract")
+            if not isinstance(shared_contract, dict):
+                fail("shared Protocol contract record is missing")
+                errors += 1
+            else:
+                authority = shared_contract.get("authority")
+                if not isinstance(authority, dict):
+                    fail("shared Protocol authority record is missing")
+                    errors += 1
+                else:
+                    authority_commit = authority.get("repository_commit")
+                    if not isinstance(authority_commit, str) or not FULL_SHA_PATTERN.fullmatch(authority_commit):
+                        fail("shared Protocol authority commit shall be a full lowercase 40-character SHA")
+                        errors += 1
+                    if authority.get("repository_commit_status") != "pinned":
+                        fail("shared Protocol authority commit status shall be pinned")
+                        errors += 1
 
-    result_text = (ROOT / "docs/VV_Results.md").read_text(encoding="utf-8") if (ROOT / "docs/VV_Results.md").is_file() else ""
+                if "project_layer_ownership_status" not in shared_contract:
+                    fail("shared Protocol ownership status is not recorded")
+                    errors += 1
+
+    result_path = ROOT / "docs" / "VV_Results.md"
+    result_text = result_path.read_text(encoding="utf-8") if result_path.is_file() else ""
     if "No system-level test is marked `PASS`" not in result_text:
         fail("V&V result boundary statement is missing")
         errors += 1

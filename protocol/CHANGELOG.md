@@ -9,3 +9,11 @@
 - Recorded that the current STM32 implementation does not yet match this candidate framing and message model.
 
 No verified interoperability claim is made by this entry.
+
+## Validation-artifact update — 2026-07-25
+
+- Added a normative ACK response vector so command, direct-response, and event encoding are all covered.
+- Added semantic YAML, provenance, frame-layout, metadata, payload, CRC, and cross-file validation.
+- Added regression tests for previously identified validation bypasses.
+
+This entry does not change Protocol version `0.1.0` or wire version `0x01`.

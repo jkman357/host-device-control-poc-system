@@ -1,6 +1,7 @@
 protocol_contract:
   repository: host-device-control-poc-system
   path: protocol/protocol.yaml
+  system_repository_commit: e4aa40b4d5dfc3e7f878f82f5a89115de9fe3679
   version: 0.1.0
   wire_version: 0x01
   status: candidate_for_alignment
