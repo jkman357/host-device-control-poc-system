@@ -16,7 +16,7 @@
 ## Repository Limitations
 
 - Initial firmware GitHub baseline does not yet represent the latest Protocol/Transport development work discussed during bring-up.
-- The shared Protocol is provisionally located in the PC repository rather than the system/project repository.
+- The shared Protocol is now controlled here, but PC/MCU implementation alignment is blocked by known wire-format and message-model differences.
 - Formal approval and evidence records have not yet been created.
 - The system repository does not independently execute or fetch external repositories in CI.
 

@@ -1,0 +1,42 @@
+protocol_contract:
+  repository: host-device-control-poc-system
+  path: protocol/protocol.yaml
+  version: 0.1.0
+  wire_version: 0x01
+  status: candidate_for_alignment
+  sha256: 7ff8db3a1ed669407e0d4cada2a78b212ea3c7bccdf371f232a2689a02e7c56e
+
+implementations:
+  - name: host-device-control-poc-pc-app
+    role: coordinator_pc
+    baseline_commit: 84bbc16f02a864084b1270db40b58460ad691e35
+    alignment_status: pending_reverification_after_authority_migration
+    evidence: []
+
+  - name: host-device-control-poc-stm32f446re-fw
+    role: node_mcu
+    baseline_commit: 31d6cafc154ef90f4c5d556c91a19650c8aa9a14
+    observed_artifact: host-device-control-poc-stm32f446re-fw-v0.1.4-complete.zip
+    alignment_status: blocked_wire_format_mismatch
+    blocking_gaps:
+      - PROTO-GAP-001
+      - PROTO-GAP-002
+      - PROTO-GAP-003
+      - PROTO-GAP-004
+      - PROTO-GAP-005
+      - PROTO-GAP-006
+      - PROTO-GAP-007
+    evidence: []
+
+promotion_gate:
+  target_status: verified_baseline
+  required:
+    - pc_commit_pinned
+    - mcu_commit_pinned
+    - system_commit_pinned
+    - protocol_sha256_matches_both_implementations
+    - csharp_vectors_pass
+    - embedded_c_vectors_pass
+    - hardware_interoperability_pass
+    - evidence_index_updated
+    - human_approval_recorded

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.1 — 2026-07-25
+
+- Established `protocol/protocol.yaml` as the authoritative PC/MCU communication contract.
+- Added normative test vectors, protocol lifecycle, compatibility rules, and implementation provenance requirements.
+- Added machine-readable implementation alignment status.
+- Recorded blocking differences between the candidate contract and the observed compiled STM32 implementation.
+- Extended CI validation to cover Protocol files and vector CRCs.
+
+
 ## v0.1.0 — 2026-07-25
 
 - Established the system/project integration repository structure.

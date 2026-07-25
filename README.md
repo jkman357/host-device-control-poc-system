@@ -16,7 +16,7 @@ This is the **system/project integration repository**. It owns:
 - the cross-repository project overview;
 - exact source baselines used for a validation cycle;
 - the system-level architecture and responsibility map;
-- shared Protocol ownership and synchronization rules;
+- the authoritative shared PC/MCU Protocol contract, test vectors, and synchronization rules;
 - build, bring-up, and user guidance;
 - system-level V&V planning, results, limitations, and evidence indexing.
 
@@ -69,6 +69,10 @@ flowchart TB
 
 The first project baseline is recorded in [`baselines/repositories.yaml`](baselines/repositories.yaml). A mutable `main` branch is not an immutable validation identity. Each validation cycle shall identify exact commits or controlled tags.
 
+## Shared communication contract
+
+The normative communication specification is [`protocol/protocol.yaml`](protocol/protocol.yaml). PC and MCU code are implementations of that contract, not alternative sources of protocol truth. The current contract is `candidate_for_alignment`; known differences are tracked in [`protocol/IMPLEMENTATION_ALIGNMENT.md`](protocol/IMPLEMENTATION_ALIGNMENT.md).
+
 ## Copyright and Use
 
-Copyright © 2026 Ray Yang. No open-source license is granted for project-specific additions. Template-derived portions retain their original MIT terms. See [`LICENSE`](LICENSE), [`NOTICE.md`](NOTICE.md), and [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+Copyright © 2026 Ray Yang. No open-source license is granted. See [`LICENSE`](LICENSE) and [`NOTICE.md`](NOTICE.md).

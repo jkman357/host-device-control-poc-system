@@ -8,4 +8,4 @@ Generative AI tools may have assisted drafting, review, restructuring, consisten
 
 A successful build, simulation, script, self-test, or demonstration proves only the boundary actually executed. It does not establish safety, cybersecurity, regulatory compliance, production readiness, or Framework conformance.
 
-No open-source license is granted for project-specific additions. Template-derived portions and any other third-party material remain subject to their original notices and terms. See `LICENSE` and `THIRD_PARTY_NOTICES.md`.
+No open-source license is granted. See `LICENSE`.

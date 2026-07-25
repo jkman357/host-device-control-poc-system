@@ -31,6 +31,11 @@ REQUIRED_FILES = [
     "docs/Evidence_Index.md",
     "docs/Known_Limitations.md",
     "validation/test-cases.yaml",
+    "protocol/protocol.yaml",
+    "protocol/CHANGELOG.md",
+    "protocol/IMPLEMENTATION_ALIGNMENT.md",
+    "protocol/implementation-status.yaml",
+    "protocol/test-vectors/protocol-v0.1.0-vectors.json",
 ]
 
 EXPECTED_REPOSITORIES = {

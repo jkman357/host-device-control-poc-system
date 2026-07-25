@@ -23,8 +23,9 @@ Last updated: 2026-07-25
 | STM32 project source availability | PASS | A CubeIDE project exists at the pinned firmware baseline. |
 | STM32 application-layer implementation | IN PROGRESS | Recent Protocol/Transport work is not yet represented by a newer pinned GitHub baseline in this initial system record. |
 | STM32 clean build and flash | OBSERVED | Build activity has been observed during development; reproducible baseline evidence is pending. |
-| Shared Protocol authority placement | IN PROGRESS | Current canonical file is stored in the PC repository; migration or controlled synchronization at the project layer is proposed. |
+| Shared Protocol authority placement | PASS | `protocol/protocol.yaml` is now the project-level source of truth. |
 | PC fake-device streaming | OBSERVED | PC repository supports fake-device streaming; formal system evidence is pending. |
+| Protocol implementation alignment | BLOCKED | Current compiled STM32 framing and message model differ from the project candidate; see `protocol/IMPLEMENTATION_ALIGNMENT.md`. |
 | PC-to-MCU command/response | NOT RUN | No indexed hardware execution record yet. |
 | 5 ms / 200 Hz hardware telemetry | NOT RUN | No indexed timing capture yet. |
 | Sequence and loss detection | NOT RUN | No indexed hardware stress result yet. |
