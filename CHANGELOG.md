@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.2.0 — 2026-07-27 — Baseline
+
+- Added `WORK_CONTINUATION.md` as a portable, non-authoritative handoff record for another AI tool, model, provider, session, or engineer.
+- Required resumed work to re-establish source identity, authority context, and applicable validation instead of inheriting a prior AI or session `PASS`.
+- Added release-candidate governance: the target formal version remains fixed, only `-rc.N` advances during review, and formal promotion requires explicit authorized-human freeze approval.
+- Preserved the original 2026-07-25 project baseline and added a separate current alignment cycle for Framework v1.1.0 and Project Template v1.1.0 package identities.
+- Added project-validator enforcement and regression coverage for required handoff boundaries, README/Changelog/baseline lifecycle consistency, multi-digit semantic versions, and LF-only repository text.
+- Updated CI to run the project-validator regression suite.
+- Preserved `protocol/protocol.yaml`, Protocol version `0.1.0`, wire version `0x01`, authority commit `b340645`, Protocol SHA-256, all eight implementation gaps, the 2500-us / 400-Hz boundary, and the 85%-utilization / 15%-headroom policy.
+- Promoted `v0.2.0-rc.1` to the frozen `v0.2.0` baseline after explicit authorized-human freeze approval; exact final Git commit/tag identification remains pending.
+- This release does not add PC/MCU or hardware evidence.
+
 ## v0.1.5 — 2026-07-25
 
 - Fixed Protocol regression fixtures so `.git`, Python bytecode, and test caches are never copied from the caller checkout into temporary repositories.

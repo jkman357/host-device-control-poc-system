@@ -1,6 +1,6 @@
 # Validation Status
 
-Last updated: 2026-07-25
+Last updated: 2026-07-27
 
 ## Status Definitions
 
@@ -16,6 +16,9 @@ Last updated: 2026-07-25
 | Area | Status | Current conclusion |
 |---|---|---|
 | Framework and repository role mapping | PASS | The four upstream roles and the system/project integration layer are identified in this repository. |
+| Work-continuation boundary | PASS | `WORK_CONTINUATION.md` preserves portable working state and explicitly cannot grant approval, create V&V evidence, accept risk, authorize release, or establish Framework conformance. |
+| Repository release lifecycle | PASS | Repository metadata consistently identifies `v0.2.0` as `Baseline`; explicit authorized-human freeze approval was received, while exact final commit/tag identification remains pending. |
+| Upstream v1.1.0 commit pinning | IN PROGRESS | Complete Framework and Project Template v1.1.0 package hashes are recorded; exact upstream full commit SHAs remain required before controlled baseline adoption. |
 | Project baseline manifest | PASS | Exact initialization commits and the Protocol authority identity are recorded in `baselines/repositories.yaml`. |
 | PC application source availability | PASS | WPF Coordinator, fake and serial transports, protocol tests, and build/run instructions are present at the pinned PC baseline. |
 | PC application local execution | OBSERVED | The application has been built and launched by the project owner; a formal execution record is not yet stored here. |
@@ -43,7 +46,7 @@ Last updated: 2026-07-25
 
 ## Next Evidence-Producing Milestone
 
-Commit and push this replacement tree, confirm the complete GitHub Actions workflow, then synchronize the STM32 and PC implementations to the pinned Protocol authority. After both implementation commits are pinned, execute:
+Commit and push this frozen replacement tree, confirm the complete GitHub Actions workflow, record the exact final commit/tag or controlled Release, then synchronize the STM32 and PC implementations to the pinned Protocol authority. After both implementation commits are pinned, execute:
 
 ```text
 PING → GET_DEVICE_INFO → SET_STREAM_CONFIG(5000 us)

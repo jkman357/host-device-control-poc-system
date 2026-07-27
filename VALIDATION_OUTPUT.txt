@@ -1,6 +1,7 @@
-Host-Device Control PoC System v0.1.5 validation
-Execution date: 2026-07-25
-Execution scope: complete replacement source tree derived from 8534b8c
+Host-Device Control PoC System v0.2.0 validation
+Execution date: 2026-07-27
+Execution scope: complete frozen baseline source tree promoted from v0.2.0-rc.1
+Lifecycle status: Baseline
 
 Commands executed
 =================
@@ -12,13 +13,25 @@ Commands executed
    Result: PASS
    Output: Project repository validation passed.
 
-3. python tools/validate_protocol_contract.py
+3. python tools/test_project_repository_validator.py
+   Result: PASS
+   Coverage: 8 cases
+     - current repository accepted
+     - missing WORK_CONTINUATION.md rejected
+     - RC marked Baseline rejected
+     - formal version marked Draft for Review rejected
+     - multi-digit semantic/RC components accepted
+     - README/Changelog version drift rejected
+     - missing handoff non-authority boundary rejected
+     - CRLF repository text rejected
+
+4. python tools/validate_protocol_contract.py
    Result: PASS with expected source-package notice
    Output:
      NOTICE: Git history is unavailable; pinned authority commit provenance was not verified.
      Protocol contract, provenance, and vectors validated.
 
-4. python tools/test_protocol_validator_regressions.py
+5. python tools/test_protocol_validator_regressions.py
    Result: PASS
    Coverage: 14 rejection cases
      - malformed YAML
@@ -35,13 +48,8 @@ Commands executed
      - unknown response name
      - missing Git history in strict mode
      - fake authority commit
-   Fixture controls:
-     - caller .git history, Python bytecode, and test caches are excluded
-     - the no-history case asserts that no .git directory was copied
-     - the fake-commit case starts from a strict-valid synthetic two-commit history
-     - the expected diagnostic includes the exact rejected fake commit identity
 
-5. python tools/validate_transport_capacity.py
+6. python tools/validate_transport_capacity.py
    Result: PASS
    Validated boundary:
      - UART: 115200 bps, 8N1
@@ -52,7 +60,7 @@ Commands executed
      - policy maximum utilization: 85%
      - policy minimum reserved headroom: 15%
 
-6. python tools/test_transport_capacity_validator.py
+7. python tools/test_transport_capacity_validator.py
    Result: PASS
    Coverage: 7 rejection cases
      - impossible 1000-us stream
@@ -63,45 +71,47 @@ Commands executed
      - overstated DEVICE_INFO capability
      - policy-only weakening
 
-7. Full-checkout regression simulation
-   Result: PASS
-   Method:
-     - copied the complete source tree to a temporary directory
-     - initialized a synthetic Git repository
-     - created an authority commit containing the current Protocol blob
-     - created a second commit pinning both provenance records to that authority
-     - passed strict Git-history Protocol validation
-     - ran all 14 Protocol regression cases from a checkout that contained .git
-   Purpose:
-     - verifies that temporary regression fixtures do not inherit the caller checkout .git directory
-     - verifies that the fake-commit case cannot pass because of an invalid starting history
+Unchanged technical authority
+=============================
 
-Protocol authority identity
-===========================
+The complete protocol/ directory is byte-identical to the v0.1.5 source ZIP.
+The complete validation/ policy directory is byte-identical to the v0.1.5 source ZIP.
 
-Authority commit:
+Protocol authority commit:
   b340645e6cb8fef9906aa7fecf22e2ca011a32bc
 
 Protocol SHA-256:
   c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef
 
-protocol/protocol.yaml remains byte-identical to the b340645 authority blob.
+Protocol version remains 0.1.0 and wire version remains 0x01.
+The eight PC/MCU implementation gaps remain open.
 The 2500-us / 400-Hz contract and the separate 85%-utilization /
 15%-headroom policy are unchanged.
 
-Not executed against the real repository history in this ZIP
-============================================================
+Not executed against real repository history
+============================================
 
 python tools/validate_protocol_contract.py --require-git-history
 
-Reason: a ZIP does not contain the repository .git history. The synthetic
-full-checkout simulation validates test-fixture behavior, but it does not
-replace the GitHub Actions check that b340645 is an ancestor of the actual
-replacement commit and contains the recorded Protocol blob.
+Reason: a GitHub source ZIP does not contain the repository .git history.
+GitHub Actions shall run the strict form after this candidate is committed.
+The local regression suite verifies strict-mode rejection and synthetic-history
+behavior, but it does not prove ancestry in the real repository.
 
-Hardware and implementation alignment
-=====================================
+Not executed
+============
 
-NOT RUN. This package corrects CI regression-fixture isolation and fake-commit
-test validity. It does not establish PC/MCU implementation alignment or
-hardware interoperability evidence.
+- PC application build or tests
+- STM32 firmware build or flash
+- hardware interoperability or timing capture
+- human release approval, risk acceptance, or Framework conformance approval beyond the explicit repository freeze decision
+- Framework conformance assessment
+
+Baseline conclusion
+===================
+
+The frozen v0.2.0 project-governance baseline passed all locally applicable
+repository, Protocol, and transport-capacity checks. Explicit authorized-human
+freeze approval was received. The exact final Git commit/tag or controlled
+Release identity remains pending, and this result does not add implementation
+or hardware evidence.

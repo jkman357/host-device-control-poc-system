@@ -18,24 +18,30 @@ This is the **system/project integration repository**. It owns:
 - the system-level architecture and responsibility map;
 - the authoritative shared PC/MCU Protocol contract, test vectors, and synchronization rules;
 - build, bring-up, and user guidance;
-- system-level V&V planning, results, limitations, and evidence indexing.
+- system-level V&V planning, results, limitations, and evidence indexing;
+- a portable work-continuation record that allows another engineer or AI tool to resume without relying on hidden chat context.
 
 It does **not**:
 
 - replace the reusable Framework;
 - duplicate the PC or MCU implementation repositories;
+- allow `WORK_CONTINUATION.md`, AI output, a ZIP, or a mutable branch to grant approval, create objective evidence, accept risk, authorize release, or establish Framework conformance;
 - claim that a draft, build, simulation, or tool result proves safety, regulatory compliance, production readiness, or Framework conformance;
 - convert unexecuted plans or user observations into objective test evidence.
 
 ## Current Status
 
-`v0.1.5 — CI Regression-Fixture Isolation`
+- Candidate version: `v0.2.0`
+- Lifecycle status: `Baseline`
+- Previous formal version: `v0.1.5`
+- Freeze status: explicit authorized-human freeze approval received; the exact final commit/tag or controlled Release remains to be established after commit.
 
-The repository structure, Protocol authority, provenance metadata pinned to `b340645`, semantic contract validation, explicit UART headroom policy, and Git-history provenance verification are established. Protocol regression fixtures now exclude the caller repository `.git` directory and the fake-commit case starts from a verified synthetic two-commit provenance baseline. PC and STM32 implementations are still being aligned to the candidate contract, so end-to-end evidence remains incomplete.
+This v0.2.0 baseline adds provider-independent work continuity, release-candidate governance, and a non-destructive upstream-alignment cycle. It does not change the Protocol contract, wire behavior, transport-capacity policy, PC/MCU gap list, or evidence conclusions. Explicit human freeze approval has been received. The exact final Git commit/tag or controlled Release shall still be recorded before this baseline is treated as an immutable repository identity.
 
 See:
 
 - [`START_HERE.md`](START_HERE.md) — reading and execution entry point;
+- [`WORK_CONTINUATION.md`](WORK_CONTINUATION.md) — portable current work state and handoff record;
 - [`REPOSITORY_MAP.md`](REPOSITORY_MAP.md) — relationship among all repositories;
 - [`QUICK_START.md`](QUICK_START.md) — practical setup and bring-up flow;
 - [`VALIDATION_STATUS.md`](VALIDATION_STATUS.md) — current validation dashboard;
@@ -67,11 +73,11 @@ flowchart TB
 
 ## Source Baselines
 
-The first project baseline is recorded in [`baselines/repositories.yaml`](baselines/repositories.yaml). A mutable `main` branch is not an immutable validation identity. Each validation cycle shall identify exact commits or controlled tags.
+The first project baseline remains recorded in [`baselines/repositories.yaml`](baselines/repositories.yaml) and is not rewritten by this release. The same file now also records the current AI-continuity alignment cycle and the exact supplied package identities. A mutable `main` branch or a detached ZIP is not an immutable validation identity. Each controlled validation cycle shall ultimately identify exact commits or controlled tags.
 
-## Shared communication contract
+## Shared Communication Contract
 
-The normative communication specification is [`protocol/protocol.yaml`](protocol/protocol.yaml). PC and MCU code are implementations of that contract, not alternative sources of protocol truth. The current contract is `candidate_for_alignment`; known differences are tracked in [`protocol/IMPLEMENTATION_ALIGNMENT.md`](protocol/IMPLEMENTATION_ALIGNMENT.md).
+The normative communication specification is [`protocol/protocol.yaml`](protocol/protocol.yaml). PC and MCU code are implementations of that contract, not alternative sources of Protocol truth. The current contract remains `candidate_for_alignment`; known differences are tracked in [`protocol/IMPLEMENTATION_ALIGNMENT.md`](protocol/IMPLEMENTATION_ALIGNMENT.md).
 
 ## Copyright and Use
 

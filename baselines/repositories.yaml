@@ -33,6 +33,40 @@ repositories:
     commit: 84bbc16f02a864084b1270db40b58460ad691e35
     initialization_state: wpf_poc_baseline_present
 
+alignment_cycles:
+  - id: poc-system-ai-continuity-alignment-2026-07-27
+    status: baseline
+    candidate_version: v0.2.0
+    previous_formal_version: v0.1.5
+    captured_date: 2026-07-27
+    purpose: provider-independent work continuity and release-candidate governance alignment
+    promotion_rule: freeze_approved_exact_final_git_identity_pending
+    freeze_approval_status: received_2026-07-27
+    final_git_identity_status: pending_commit_tag_or_release
+    system_source_package:
+      filename: host-device-control-poc-system-main.zip
+      sha256: 13817236a363887650bccef9d7ce3cce94c78ec67388466a218cd0ab9a4cbaa9
+      identity_limit: detached_zip_has_no_git_history
+    upstream_working_sources:
+      - role: reusable_framework_authority
+        name: host-device-control-framework
+        package_version: v1.1.0
+        package_sha256: bea96dba07baf3449e2879668ba06bcbcf7e1abf418ba86c4c8a944e70a83783
+        exact_git_commit: TBD
+        identity_status: package_verified_commit_pin_pending
+      - role: reusable_project_template
+        name: host-device-control-project-template
+        package_version: v1.1.0
+        package_sha256: 69e1d25bd0f19e40765e3c1f26aeb18e622d9836fa2aea9b4367f6fde1384492
+        exact_git_commit: TBD
+        identity_status: package_verified_commit_pin_pending
+    unchanged_authority_boundaries:
+      protocol_contract: protocol/protocol.yaml
+      protocol_authority_commit: b340645e6cb8fef9906aa7fecf22e2ca011a32bc
+      protocol_sha256: c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef
+      protocol_version: 0.1.0
+      wire_version: 0x01
+
 shared_contract:
   authority:
     repository: host-device-control-poc-system
