@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.1 — 2026-07-27 — Baseline
+
+- Added `.gitattributes` to make LF the canonical checkout form for repository text on Windows, Linux, and macOS.
+- Marked common binary artifacts as binary so Git never applies line-ending conversion to them.
+- Extended repository validation to require the LF rule and binary declarations and to inspect `.gitattributes` as controlled text.
+- Added regression cases that reject a missing `.gitattributes` file and a weakened or removed canonical LF rule.
+- Normalized the candidate source tree to LF after detecting that a Windows clone ZIP converted tracked text to CRLF and invalidated Protocol SHA-256 checks.
+- Preserved the frozen `v0.2.0` baseline, the complete `protocol/` contract, the Protocol authority commit and SHA-256, all implementation gaps, transport-capacity policy, and evidence conclusions.
+- Promoted `v0.2.1-rc.1` to the frozen `v0.2.1` baseline after explicit authorized-human freeze approval; exact final Git commit/tag or controlled Release identification remains pending.
+
 ## v0.2.0 — 2026-07-27 — Baseline
 
 - Added `WORK_CONTINUATION.md` as a portable, non-authoritative handoff record for another AI tool, model, provider, session, or engineer.

@@ -55,6 +55,10 @@ When work resumes in a different session, tool, model, provider, or with another
 7. Update `WORK_CONTINUATION.md` before another handoff.
 8. Return a complete updated project package when complete-package exchange is required.
 
+## Cross-Platform Checkout Rule
+
+Repository text is canonical LF. Do not disable or weaken `.gitattributes`. After cloning on any platform, `git status --short` shall remain clean before work begins. If a tool or archive process rewrites line endings, restore the controlled checkout before trusting hashes, validators, or diffs.
+
 ## Release-Candidate and Freeze Rule
 
 During one review cycle, keep the intended formal version fixed and increment only the RC suffix:

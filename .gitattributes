@@ -1,0 +1,17 @@
+# Repository text files are canonical LF on every platform.
+* text=auto eol=lf
+
+# Binary artifacts shall never be line-ending normalized.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.7z binary
+*.bin binary
+*.hex binary
+*.elf binary
+*.exe binary
+*.dll binary

@@ -20,56 +20,45 @@ export-controlled information, or unauthorized third-party material in this file
 | Field | Value |
 |---|---|
 | Last updated | `2026-07-27` |
-| Updated by | `AI-assisted update after explicit authorized-human freeze approval` |
-| System repository source or package identity | `host-device-control-poc-system-main.zip`, SHA-256 `13817236a363887650bccef9d7ce3cce94c78ec67388466a218cd0ab9a4cbaa9` |
-| Current release | `v0.2.0` — `Baseline` |
-| Previous formal version | `v0.1.5` |
+| Updated by | `AI-assisted baseline promotion following authorized-human freeze approval` |
+| System repository source or package identity | `host-device-control-poc-system.zip`, SHA-256 `d804db2efad86c71da8f69e73535ffd73f5925bab09e08d0e1c3fb88361792c0`; clone ZIP included Git history but its worktree had CRLF conversion |
+| Current release | `v0.2.1` — `Baseline` |
+| Previous formal version | `v0.2.0` |
 | Framework working source | `host-device-control-framework v1.1.0` package, SHA-256 `bea96dba07baf3449e2879668ba06bcbcf7e1abf418ba86c4c8a944e70a83783`; exact upstream commit pin pending |
 | Project Template working source | `host-device-control-project-template v1.1.0` package, SHA-256 `69e1d25bd0f19e40765e3c1f26aeb18e622d9836fa2aea9b4367f6fde1384492`; exact upstream commit pin pending |
-| Current task objective | Align the system repository with provider-independent AI work continuity and release-candidate governance without changing the Protocol contract |
-| Requested scope | Project-governance documents, baseline metadata, repository validator, and regression coverage |
-| Current status | Frozen baseline package prepared; Git commit, CI, and exact commit/tag or controlled Release identity are still required |
-| Intended next action | Commit the frozen baseline, run CI with full Git history, then record the exact final commit/tag or controlled Release identity |
+| Current task objective | Enforce byte-stable LF checkouts across platforms without changing Protocol or system behavior |
+| Requested scope | `.gitattributes`, repository lifecycle metadata, validation rules, regression coverage, and handoff records |
+| Current status | `v0.2.1-rc.1` promoted to frozen `v0.2.1`; exact final Git commit/tag or controlled Release identity and post-commit CI remain pending |
+| Intended next action | Commit and push the frozen `v0.2.1` tree, run CI with full Git history, verify a fresh Windows clone, and record the controlled Git identity |
 
 ## Completed Scope
 
-- Added a portable work-continuation record for cross-session, cross-tool, and cross-provider handoff.
-- Promoted the accepted `v0.2.0-rc.1` candidate to the frozen `v0.2.0` baseline while retaining `v0.1.5` as the previous formal version.
-- Recorded a new alignment cycle without rewriting the original 2026-07-25 project baseline.
-- Added project-validator checks and regression tests for RC lifecycle consistency, handoff boundaries, line endings, and baseline metadata.
-- Kept the Protocol contract, Protocol authority commit, wire version, vectors, implementation gaps, and transport-capacity policy unchanged.
+- Added `.gitattributes` with canonical LF checkout behavior and binary exclusions.
+- Normalized all candidate text files to LF after a Windows clone ZIP converted tracked text to CRLF.
+- Extended repository validation and regression tests to prevent removal or weakening of the LF rule.
+- Promoted the reviewed `v0.2.1-rc.1` content to the frozen `v0.2.1` baseline after explicit authorized-human freeze approval recorded as `FRZ-001`.
+- Kept the Protocol contract, authority commit, SHA-256, vectors, implementation gaps, transport policy, and evidence conclusions unchanged.
 
 ## File Changes
 
 | Path | Change | Reason | Authority or decision source |
 |---|---|---|---|
-| `WORK_CONTINUATION.md` | Added | Preserve portable engineering state across AI/provider/session interruption | Framework v1.1.0 AI continuity guidance and project decision DEC-008 |
-| `README.md` | Modified | Publish formal baseline lifecycle and continuity entry point | Project decision DEC-009 |
-| `START_HERE.md` | Modified | Require resumed work to re-establish source and validation state | Framework v1.1.0 AI continuity guidance |
-| `CHANGELOG.md` | Modified | Record `v0.2.0` baseline promotion and scope | Project decision DEC-009 |
-| `FRAMEWORK_REFERENCE.md` | Modified | Separate historical initialization sources from current working alignment packages | Project decision DEC-010 |
-| `QUICK_START.md` | Modified | Support complete ZIP handoff and explain Git-history limitations | Framework v1.1.0 AI continuity guidance |
-| `NOTICE.md` | Modified | Clarify handoff and AI-output authority boundaries | Existing human responsibility boundary |
-| `baselines/repositories.yaml` | Modified | Add a non-destructive current alignment cycle | Project decision DEC-010 |
-| `docs/Decision_Log.md` | Modified | Activate continuity, RC, and baseline-retention decisions after freeze approval | Explicit authorized-human freeze approval |
-| `VALIDATION_STATUS.md` | Modified | Expose current governance alignment and baseline status | Frozen repository state |
-| `VALIDATION_OUTPUT.txt` | Modified | Record checks actually executed for this frozen baseline | Baseline validation execution |
-| `tools/validate_project_repository.py` | Modified | Enforce candidate lifecycle and handoff boundaries | Repository governance |
-| `tools/test_project_repository_validator.py` | Added | Regression-test new governance checks | Repository governance |
-| `.github/workflows/project-validation.yml` | Modified | Execute the new validator regression suite | CI governance |
+| `.gitattributes` | Added | Enforce canonical LF and protect binary artifacts from normalization | Project decision DEC-011 |
+| `README.md`, `CHANGELOG.md`, `baselines/repositories.yaml` | Modified | Record promotion from `v0.2.1-rc.1` to frozen `v0.2.1` without rewriting `v0.2.0` | Authorized-human freeze approval; project decisions DEC-009 and DEC-011 |
+| `tools/validate_project_repository.py`, `tools/test_project_repository_validator.py` | Modified | Enforce and regression-test line-ending authority | Repository governance |
 
 ## Facts, Assumptions, Unknowns, and Conflicts
 
 ### Source-Backed Facts
 
-- The previous formal repository version is `v0.1.5`.
+- The previous formal repository version is `v0.2.0`.
 - The Protocol contract remains version `0.1.0`, wire version `0x01`.
 - The Protocol authority remains commit `b340645e6cb8fef9906aa7fecf22e2ca011a32bc` with SHA-256 `c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef`.
 - The existing PC/MCU alignment status remains blocked and the eight recorded gaps remain open.
 
 ### Assumptions or Prior-AI Proposals
 
-- `v0.2.0` is the frozen formal repository version because the release adds a project-governance capability rather than a Protocol patch.
+- `v0.2.1` is the appropriate patch release because it changes repository checkout and validation behavior without changing Protocol or system behavior.
 - The supplied Framework and Project Template packages represent their stated `v1.1.0` content; exact upstream Git commits still require pinning from full repository history.
 
 ### Unknowns and Unresolved Conflicts
@@ -81,37 +70,38 @@ export-controlled information, or unauthorized third-party material in this file
 
 | Check or command | Environment or target | Actual result | Evidence location or limitation |
 |---|---|---|---|
-| `python -m compileall -q tools` | Source ZIP workspace, Python 3 | PASS | `VALIDATION_OUTPUT.txt` |
-| `python tools/validate_project_repository.py` | Source ZIP workspace | PASS | `VALIDATION_OUTPUT.txt` |
-| `python tools/test_project_repository_validator.py` | Source ZIP workspace | PASS — 8 regression cases | `VALIDATION_OUTPUT.txt` |
-| `python tools/validate_protocol_contract.py` | Source ZIP workspace | PASS with expected no-Git-history notice | Cannot prove historical Git ancestry without `.git` |
-| `python tools/test_protocol_validator_regressions.py` | Source ZIP workspace | PASS — 14 rejection cases | `VALIDATION_OUTPUT.txt` |
-| `python tools/validate_transport_capacity.py` | Source ZIP workspace | PASS | `VALIDATION_OUTPUT.txt` |
-| `python tools/test_transport_capacity_validator.py` | Source ZIP workspace | PASS — 7 rejection cases | `VALIDATION_OUTPUT.txt` |
+| `python -m compileall -q tools` | Git-backed candidate workspace, Python 3 | PASS | `VALIDATION_OUTPUT.txt` |
+| `python tools/validate_project_repository.py` | Git-backed candidate workspace | PASS | Includes `.gitattributes`, lifecycle, boundary, and LF checks |
+| `python tools/test_project_repository_validator.py` | Git-backed candidate workspace | PASS — 10 regression cases | `VALIDATION_OUTPUT.txt` |
+| `python tools/validate_protocol_contract.py --require-git-history` | Git-backed candidate workspace at HEAD `e60aed6d06cc16f4c7beb08b418efb395d8e9a87` | PASS | Historical authority ancestry and blob identity verified |
+| `python tools/test_protocol_validator_regressions.py` | Git-backed candidate workspace | PASS — 14 rejection cases | `VALIDATION_OUTPUT.txt` |
+| `python tools/validate_transport_capacity.py` | Git-backed candidate workspace | PASS | `VALIDATION_OUTPUT.txt` |
+| `python tools/test_transport_capacity_validator.py` | Git-backed candidate workspace | PASS — 7 rejection cases | `VALIDATION_OUTPUT.txt` |
+| `git diff --check` | Git-backed candidate workspace | PASS | No whitespace errors in tracked candidate changes |
 
 A successor shall not inherit a `PASS` assertion without re-establishing the
 source state and rerunning applicable checks.
 
 ## Important Checks Not Executed
 
-- Real Git-history verification with `validate_protocol_contract.py --require-git-history`.
 - GitHub Actions against the eventual candidate commit.
+- Validation of a fresh post-commit Windows clone using the new `.gitattributes` rule.
 - PC build, STM32 build/flash, or hardware interoperability testing.
-- Human release approval, risk acceptance, or Framework conformance review beyond the explicit repository freeze decision.
+- Post-commit GitHub Actions, fresh Windows clone verification, release/tag creation, risk acceptance, or Framework conformance review.
 
 ## Known Failures, Limitations, and Incomplete Work
 
-- Exact upstream Framework and Project Template Git commit identities are not yet pinned in the current alignment cycle.
+- Exact upstream Framework and Project Template Git commit identities remain pending from the earlier alignment cycle.
 - PC/MCU implementation alignment and hardware evidence remain incomplete.
-- The source tree is frozen as `v0.2.0`, but its immutable Git commit/tag or controlled Release identity is not yet recorded.
+- `v0.2.1` is frozen as the current document/package baseline, but its exact final Git commit/tag or controlled Release identity remains pending until commit and CI completion.
 
 ## Next Bounded Actions
 
-1. Commit the frozen `v0.2.0` source tree to the system repository.
+1. Commit and push the frozen `v0.2.1` tree.
 2. Run the complete GitHub Actions workflow with full Git history.
-3. Record the exact final system-repository commit/tag or controlled Release identity.
-4. Record exact Framework and Project Template v1.1.0 commit SHAs before controlled upstream-baseline adoption.
-5. Continue PC/MCU alignment and hardware evidence work without changing the frozen governance scope unless a new RC cycle is explicitly opened.
+3. Verify a fresh Windows clone remains clean and preserves LF/Protocol SHA-256.
+4. Record the exact final system-repository commit/tag or controlled Release identity.
+5. Continue PC/MCU alignment and hardware evidence work independently of this line-ending patch.
 
 ## Human Decisions or Approvals Still Required
 

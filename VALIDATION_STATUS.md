@@ -17,7 +17,8 @@ Last updated: 2026-07-27
 |---|---|---|
 | Framework and repository role mapping | PASS | The four upstream roles and the system/project integration layer are identified in this repository. |
 | Work-continuation boundary | PASS | `WORK_CONTINUATION.md` preserves portable working state and explicitly cannot grant approval, create V&V evidence, accept risk, authorize release, or establish Framework conformance. |
-| Repository release lifecycle | PASS | Repository metadata consistently identifies `v0.2.0` as `Baseline`; explicit authorized-human freeze approval was received, while exact final commit/tag identification remains pending. |
+| Cross-platform line-ending control | PASS | `.gitattributes` makes LF canonical across platforms, binary patterns are excluded, and the repository validator rejects CR/CRLF or a weakened LF rule. |
+| Repository release lifecycle | PASS | Repository metadata consistently identifies frozen `v0.2.1` as `Baseline`; explicit freeze approval was received on 2026-07-27, while exact final Git commit/tag or controlled Release identity remains pending. |
 | Upstream v1.1.0 commit pinning | IN PROGRESS | Complete Framework and Project Template v1.1.0 package hashes are recorded; exact upstream full commit SHAs remain required before controlled baseline adoption. |
 | Project baseline manifest | PASS | Exact initialization commits and the Protocol authority identity are recorded in `baselines/repositories.yaml`. |
 | PC application source availability | PASS | WPF Coordinator, fake and serial transports, protocol tests, and build/run instructions are present at the pinned PC baseline. |
@@ -28,7 +29,7 @@ Last updated: 2026-07-27
 | STM32 clean build and flash | OBSERVED | Build activity has been observed during development; reproducible baseline evidence is pending. |
 | Shared Protocol authority placement | PASS | `protocol/protocol.yaml` is the project-level source of truth. |
 | Protocol authority metadata | PASS | Both provenance records identify commit `b340645e6cb8fef9906aa7fecf22e2ca011a32bc` and SHA-256 `c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef`. |
-| Historical Protocol provenance | CI-GATED | The source ZIP has no `.git` directory. A full checkout shall run `validate_protocol_contract.py --require-git-history` to verify that `b340645` is an ancestor and contains the identical Protocol blob. |
+| Historical Protocol provenance | PASS | Strict validation was executed in the supplied Git-backed clone at HEAD `e60aed6`; authority commit `b340645` is an ancestor and its Protocol blob matches the recorded SHA-256. The distributable ZIP still omits `.git`, so future package-only checks cannot independently repeat ancestry verification. |
 | Protocol contract validation | PASS | Local source-package validation checks YAML structure, framing semantics, IDs, sequence rules, response relationships, cross-file hashes, vectors, payload lengths, and CRCs. |
 | Protocol transport-capacity validation | PASS | Local validation derives the 115200-bps 8N1 budget, verifies the 24-byte telemetry frame, enforces 2500 us / 400 Hz, and applies the separate 85%-utilization / 15%-headroom policy. |
 | Protocol validator regression tests | PASS | Fourteen cases passed locally. Temporary fixtures exclude caller `.git` history, and the fake-commit case first proves a valid synthetic two-commit provenance baseline before applying the negative mutation. |
@@ -46,7 +47,7 @@ Last updated: 2026-07-27
 
 ## Next Evidence-Producing Milestone
 
-Commit and push this frozen replacement tree, confirm the complete GitHub Actions workflow, record the exact final commit/tag or controlled Release, then synchronize the STM32 and PC implementations to the pinned Protocol authority. After both implementation commits are pinned, execute:
+Commit and push the frozen `v0.2.1` tree, confirm the complete GitHub Actions workflow with full Git history, verify a fresh Windows clone remains clean, and record the exact commit/tag or controlled Release. Then resume implementation alignment using:
 
 ```text
 PING → GET_DEVICE_INFO → SET_STREAM_CONFIG(5000 us)

@@ -14,7 +14,7 @@ This release does not rewrite those historical identities.
 
 ## Current Working Alignment Cycle
 
-- System repository baseline: `v0.2.0` — `Baseline`
+- System repository baseline: `v0.2.1` — `Baseline`; previous formal baseline: `v0.2.0`; exact final Git identity pending
 - Framework working package: `v1.1.0`
 - Supplied Framework ZIP SHA-256: `bea96dba07baf3449e2879668ba06bcbcf7e1abf418ba86c4c8a944e70a83783`
 - Project Template working package: `v1.1.0`

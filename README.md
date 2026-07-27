@@ -31,12 +31,12 @@ It does **not**:
 
 ## Current Status
 
-- Candidate version: `v0.2.0`
+- Candidate version: `v0.2.1`
 - Lifecycle status: `Baseline`
-- Previous formal version: `v0.1.5`
-- Freeze status: explicit authorized-human freeze approval received; the exact final commit/tag or controlled Release remains to be established after commit.
+- Previous formal version: `v0.2.0`
+- Freeze status: received on 2026-07-27; exact final Git commit/tag or controlled Release identity remains pending.
 
-This v0.2.0 baseline adds provider-independent work continuity, release-candidate governance, and a non-destructive upstream-alignment cycle. It does not change the Protocol contract, wire behavior, transport-capacity policy, PC/MCU gap list, or evidence conclusions. Explicit human freeze approval has been received. The exact final Git commit/tag or controlled Release shall still be recorded before this baseline is treated as an immutable repository identity.
+This frozen `v0.2.1` baseline adds repository-level LF enforcement so Windows, Linux, and macOS checkouts preserve byte-stable text files and Protocol hashes. It does not change the Protocol contract, wire behavior, transport-capacity policy, PC/MCU gap list, or evidence conclusions. Explicit authorized-human freeze approval was received on 2026-07-27; the exact final Git commit/tag or controlled Release identity remains pending until this tree is committed and verified in CI.
 
 See:
 
@@ -74,6 +74,8 @@ flowchart TB
 ## Source Baselines
 
 The first project baseline remains recorded in [`baselines/repositories.yaml`](baselines/repositories.yaml) and is not rewritten by this release. The same file now also records the current AI-continuity alignment cycle and the exact supplied package identities. A mutable `main` branch or a detached ZIP is not an immutable validation identity. Each controlled validation cycle shall ultimately identify exact commits or controlled tags.
+
+Repository text files are canonically LF. [`.gitattributes`](.gitattributes) enforces LF checkout behavior across supported platforms and identifies binary artifacts that shall not be normalized.
 
 ## Shared Communication Contract
 

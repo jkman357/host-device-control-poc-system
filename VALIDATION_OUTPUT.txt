@@ -1,7 +1,11 @@
-Host-Device Control PoC System v0.2.0 validation
+Host-Device Control PoC System v0.2.1 validation
 Execution date: 2026-07-27
-Execution scope: complete frozen baseline source tree promoted from v0.2.0-rc.1
+Execution scope: frozen cross-platform LF enforcement baseline derived from the reviewed RC
 Lifecycle status: Baseline
+Freeze approval record: FRZ-001
+Previous formal version: v0.2.0
+Source clone ZIP SHA-256: d804db2efad86c71da8f69e73535ffd73f5925bab09e08d0e1c3fb88361792c0
+Git HEAD used for strict provenance: e60aed6d06cc16f4c7beb08b418efb395d8e9a87
 
 Commands executed
 =================
@@ -12,11 +16,15 @@ Commands executed
 2. python tools/validate_project_repository.py
    Result: PASS
    Output: Project repository validation passed.
+   Coverage includes required `.gitattributes`, canonical LF, binary declarations,
+   RC lifecycle consistency, handoff boundaries, YAML/JSON parsing, and package residue.
 
 3. python tools/test_project_repository_validator.py
    Result: PASS
-   Coverage: 8 cases
+   Coverage: 10 cases
      - current repository accepted
+     - missing `.gitattributes` rejected
+     - weakened canonical LF rule rejected
      - missing WORK_CONTINUATION.md rejected
      - RC marked Baseline rejected
      - formal version marked Draft for Review rejected
@@ -25,29 +33,15 @@ Commands executed
      - missing handoff non-authority boundary rejected
      - CRLF repository text rejected
 
-4. python tools/validate_protocol_contract.py
-   Result: PASS with expected source-package notice
-   Output:
-     NOTICE: Git history is unavailable; pinned authority commit provenance was not verified.
-     Protocol contract, provenance, and vectors validated.
+4. python tools/validate_protocol_contract.py --require-git-history
+   Result: PASS
+   Output: Protocol contract, provenance, and vectors validated.
+   The pinned authority commit exists, is an ancestor of HEAD, and contains the
+   identical authoritative Protocol blob.
 
 5. python tools/test_protocol_validator_regressions.py
    Result: PASS
    Coverage: 14 rejection cases
-     - malformed YAML
-     - vector metadata drift
-     - framing offset drift
-     - stale Protocol hash
-     - sequence endian conflict
-     - field type mismatch
-     - sequence width mismatch
-     - event used as command response
-     - response sequence mismatch
-     - duplicate message ID
-     - CRC parameter drift
-     - unknown response name
-     - missing Git history in strict mode
-     - fake authority commit
 
 6. python tools/validate_transport_capacity.py
    Result: PASS
@@ -63,19 +57,24 @@ Commands executed
 7. python tools/test_transport_capacity_validator.py
    Result: PASS
    Coverage: 7 rejection cases
-     - impossible 1000-us stream
-     - telemetry frame-size mismatch
-     - removal of all transport headroom
-     - internally consistent 401-Hz policy bypass
-     - internally consistent 479-Hz policy bypass
-     - overstated DEVICE_INFO capability
-     - policy-only weakening
+
+8. git diff --check
+   Result: PASS
+
+Cross-platform line-ending change
+=================================
+
+- Added `.gitattributes` with `* text=auto eol=lf`.
+- Marked common image, archive, executable, firmware, and document artifacts as binary.
+- Normalized candidate text to LF after the supplied Windows clone ZIP converted
+  tracked text to CRLF.
+- Added validator and regression enforcement so the LF rule cannot be silently removed.
 
 Unchanged technical authority
 =============================
 
-The complete protocol/ directory is byte-identical to the v0.1.5 source ZIP.
-The complete validation/ policy directory is byte-identical to the v0.1.5 source ZIP.
+The complete `protocol/` directory and `validation/` policy content remain
+byte-identical to the frozen v0.2.0 baseline.
 
 Protocol authority commit:
   b340645e6cb8fef9906aa7fecf22e2ca011a32bc
@@ -88,30 +87,22 @@ The eight PC/MCU implementation gaps remain open.
 The 2500-us / 400-Hz contract and the separate 85%-utilization /
 15%-headroom policy are unchanged.
 
-Not executed against real repository history
-============================================
-
-python tools/validate_protocol_contract.py --require-git-history
-
-Reason: a GitHub source ZIP does not contain the repository .git history.
-GitHub Actions shall run the strict form after this candidate is committed.
-The local regression suite verifies strict-mode rejection and synthetic-history
-behavior, but it does not prove ancestry in the real repository.
-
 Not executed
 ============
 
+- GitHub Actions against the committed frozen v0.2.1 tree
+- Fresh Windows clone verification after committing `.gitattributes`
 - PC application build or tests
 - STM32 firmware build or flash
 - hardware interoperability or timing capture
-- human release approval, risk acceptance, or Framework conformance approval beyond the explicit repository freeze decision
-- Framework conformance assessment
+- tag/Release creation, risk acceptance, or Framework conformance approval
 
 Baseline conclusion
 ===================
 
-The frozen v0.2.0 project-governance baseline passed all locally applicable
-repository, Protocol, and transport-capacity checks. Explicit authorized-human
-freeze approval was received. The exact final Git commit/tag or controlled
-Release identity remains pending, and this result does not add implementation
-or hardware evidence.
+The reviewed v0.2.1-rc.1 content was promoted to the frozen v0.2.1 baseline
+after explicit authorized-human freeze approval. The frozen tree passed all
+locally applicable repository, strict Git-provenance, Protocol, and
+transport-capacity checks. It does not modify Protocol or implementation
+behavior. Exact final Git commit/tag or controlled Release identity remains
+pending until commit, push, and CI completion.

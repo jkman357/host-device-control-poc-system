@@ -74,6 +74,24 @@ class ProjectRepositoryValidatorTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("missing required file: WORK_CONTINUATION.md", result.stdout)
 
+    def test_missing_gitattributes_is_rejected(self) -> None:
+        holder, target = self.make_repo()
+        with holder:
+            (target / ".gitattributes").unlink()
+            result = self.run_validator(target)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("missing required file: .gitattributes", result.stdout)
+
+    def test_canonical_lf_rule_is_required(self) -> None:
+        holder, target = self.make_repo()
+        with holder:
+            path = target / ".gitattributes"
+            text = path.read_text(encoding="utf-8").replace("* text=auto eol=lf", "* text=auto")
+            path.write_text(text, encoding="utf-8", newline="\n")
+            result = self.run_validator(target)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(".gitattributes shall retain required rule: * text=auto eol=lf", result.stdout)
+
     def test_release_candidate_cannot_be_baseline(self) -> None:
         holder, target = self.make_repo()
         with holder:
@@ -101,7 +119,13 @@ class ProjectRepositoryValidatorTests(unittest.TestCase):
         holder, target = self.make_repo()
         with holder:
             changelog_path = target / "CHANGELOG.md"
-            text = changelog_path.read_text(encoding="utf-8").replace("## v0.2.0", "## v0.2.1", 1)
+            text = __import__("re").sub(
+                r"^(## )[^ ]+( — \d{4}-\d{2}-\d{2} — )",
+                r"\g<1>v9.9.9-rc.1\g<2>",
+                changelog_path.read_text(encoding="utf-8"),
+                count=1,
+                flags=__import__("re").MULTILINE,
+            )
             changelog_path.write_text(text, encoding="utf-8", newline="\n")
             result = self.run_validator(target)
             self.assertNotEqual(result.returncode, 0)

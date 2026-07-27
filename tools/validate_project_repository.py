@@ -14,6 +14,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = [
+    ".gitattributes",
     ".github/workflows/project-validation.yml",
     ".gitignore",
     "CHANGELOG.md",
@@ -69,7 +70,20 @@ FORBIDDEN_PACKAGE_FILES = {
     "TEST_RESULTS.txt",
 }
 
-TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".gitignore"}
+TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py"}
+TEXT_FILENAMES = {".gitignore", ".gitattributes"}
+REQUIRED_GITATTRIBUTES = {
+    "* text=auto eol=lf",
+    "*.png binary",
+    "*.jpg binary",
+    "*.jpeg binary",
+    "*.pdf binary",
+    "*.zip binary",
+    "*.bin binary",
+    "*.hex binary",
+    "*.elf binary",
+}
+
 SEMVER = r"v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-rc\.(?:[1-9]\d*))?"
 README_RELEASE_RE = re.compile(
     rf"- Candidate version: `(?P<version>{SEMVER})`\s*\n"
@@ -96,7 +110,7 @@ def load_yaml(path: Path, errors: list[str]) -> Any:
 
 
 def is_text_repository_file(path: Path) -> bool:
-    return path.name == ".gitignore" or path.suffix.lower() in TEXT_SUFFIXES
+    return path.name in TEXT_FILENAMES or path.suffix.lower() in TEXT_SUFFIXES
 
 
 def validate_release_state(errors: list[str]) -> None:
@@ -192,6 +206,17 @@ def main() -> int:
             content = path.read_bytes()
             if b"\r" in content:
                 errors.append(f"CR or CRLF line ending is prohibited: {path.relative_to(ROOT)}")
+
+    attributes_path = ROOT / ".gitattributes"
+    if attributes_path.is_file():
+        attribute_lines = {
+            line.strip()
+            for line in attributes_path.read_text(encoding="utf-8", errors="replace").splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        }
+        for required_line in sorted(REQUIRED_GITATTRIBUTES):
+            if required_line not in attribute_lines:
+                errors.append(f".gitattributes shall retain required rule: {required_line}")
 
     for name in FORBIDDEN_PACKAGE_FILES:
         if (ROOT / name).exists():
