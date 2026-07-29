@@ -31,12 +31,12 @@ It does **not**:
 
 ## Current Status
 
-- Candidate version: `v0.2.1`
+- Current version: `v0.2.2`
 - Lifecycle status: `Baseline`
-- Previous formal version: `v0.2.0`
-- Freeze status: received on 2026-07-27; exact final Git commit/tag or controlled Release identity remains pending.
+- Previous formal version: `v0.2.1`
+- Freeze status: frozen from `v0.2.2-rc.1` by explicit authorized-human approval on `2026-07-29`; exact final Git commit/tag or controlled Release identity remains pending.
 
-This frozen `v0.2.1` baseline adds repository-level LF enforcement so Windows, Linux, and macOS checkouts preserve byte-stable text files and Protocol hashes. It does not change the Protocol contract, wire behavior, transport-capacity policy, PC/MCU gap list, or evidence conclusions. Explicit authorized-human freeze approval was received on 2026-07-27; the exact final Git commit/tag or controlled Release identity remains pending until this tree is committed and verified in CI.
+This baseline aligns the project with Framework `v1.1.2` and Project Template `v1.1.2`. It defines WPF as the current, replaceable Presentation adapter and protects the Application, Core, Protocol, device-session, and transport-abstraction behavior from direct UI-framework dependency. It does not change the Protocol contract, wire behavior, transport-capacity policy, PC/MCU implementation-gap list, or prior evidence conclusions.
 
 See:
 
@@ -53,27 +53,39 @@ See:
 ```mermaid
 flowchart TB
     H[Human Product / Project Authority]
-    F[1. Host-Device Control Framework\nReusable authority set]
-    T[2. Project Template\nReusable project skeleton]
-    S[This repository\nPoC system project and evidence index]
-    P[4. PC App\nCoordinator implementation]
-    M[3. STM32 Firmware\nNode implementation]
+    F[1. Host-Device Control Framework
+Reusable authority set]
+    T[2. Project Template
+Reusable project skeleton]
+    S[This repository
+PoC system project and evidence index]
+    U[WPF Presentation Adapter
+View / ViewModel / UI services]
+    A[Application and Core
+Use cases / device session / Protocol behavior]
+    I[Infrastructure Adapters
+Fake / Serial / file and logging]
+    M[3. STM32 Firmware
+Node implementation]
     E[System Integration Evidence]
 
     H --> S
     F --> S
     T -. instantiated as .-> S
-    S --> P
-    S --> M
-    P <--> |Shared framed protocol over ST-LINK VCP| M
-    P --> E
+    S --> U
+    U --> A
+    I --> A
+    S --> I
+    A <--> |Shared framed protocol over ST-LINK VCP| M
+    U --> E
+    A --> E
     M --> E
     S --> E
 ```
 
 ## Source Baselines
 
-The first project baseline remains recorded in [`baselines/repositories.yaml`](baselines/repositories.yaml) and is not rewritten by this release. The same file now also records the current AI-continuity alignment cycle and the exact supplied package identities. A mutable `main` branch or a detached ZIP is not an immutable validation identity. Each controlled validation cycle shall ultimately identify exact commits or controlled tags.
+The original project baseline and earlier alignment cycles remain recorded in [`baselines/repositories.yaml`](baselines/repositories.yaml) and are not rewritten by this baseline. A new alignment cycle records the exact supplied Framework `v1.1.2` and Project Template `v1.1.2` package identities used for this Presentation-boundary update. A mutable `main` branch or detached ZIP is not an immutable validation identity. Each controlled validation cycle shall ultimately identify exact commits or controlled tags.
 
 Repository text files are canonically LF. [`.gitattributes`](.gitattributes) enforces LF checkout behavior across supported platforms and identifies binary artifacts that shall not be normalized.
 

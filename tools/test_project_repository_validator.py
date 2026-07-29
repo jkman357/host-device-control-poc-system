@@ -41,7 +41,7 @@ class ProjectRepositoryValidatorTests(unittest.TestCase):
     def set_release(target: Path, version: str, status: str, cycle_status: str) -> None:
         readme_path = target / "README.md"
         readme = readme_path.read_text(encoding="utf-8")
-        readme = __import__("re").sub(r"- Candidate version: `[^`]+`", f"- Candidate version: `{version}`", readme, count=1)
+        readme = __import__("re").sub(r"- (?:Current|Candidate) version: `[^`]+`", f"- Current version: `{version}`", readme, count=1)
         readme = __import__("re").sub(r"- Lifecycle status: `[^`]+`", f"- Lifecycle status: `{status}`", readme, count=1)
         readme_path.write_text(readme, encoding="utf-8", newline="\n")
 
@@ -144,6 +144,44 @@ class ProjectRepositoryValidatorTests(unittest.TestCase):
             result = self.run_validator(target)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("explicit non-authority boundary", result.stdout)
+
+    def test_missing_presentation_project_input_is_rejected(self) -> None:
+        holder, target = self.make_repo()
+        with holder:
+            path = target / "PROJECT_INPUT.md"
+            text = path.read_text(encoding="utf-8").replace("## Presentation and Platform Boundary", "## Platform Notes", 1)
+            path.write_text(text, encoding="utf-8", newline="\n")
+            result = self.run_validator(target)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("PROJECT_INPUT.md missing required Presentation-boundary marker", result.stdout)
+
+    def test_core_wpf_dependency_rule_is_required(self) -> None:
+        holder, target = self.make_repo()
+        with holder:
+            path = target / "docs/System_Architecture.md"
+            text = path.read_text(encoding="utf-8").replace(
+                "Application and Core layers shall not reference WPF-specific",
+                "Application and Core layers may reference WPF-specific",
+                1,
+            )
+            path.write_text(text, encoding="utf-8", newline="\n")
+            result = self.run_validator(target)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("docs/System_Architecture.md missing required Presentation-boundary marker", result.stdout)
+
+    def test_headless_core_verification_rule_is_required(self) -> None:
+        holder, target = self.make_repo()
+        with holder:
+            path = target / "docs/VV_Plan.md"
+            text = path.read_text(encoding="utf-8").replace(
+                "without creating a WPF `Application`, `Window`, visual tree, or Dispatcher loop",
+                "with the complete WPF runtime active",
+                1,
+            )
+            path.write_text(text, encoding="utf-8", newline="\n")
+            result = self.run_validator(target)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("docs/VV_Plan.md missing required Presentation-boundary marker", result.stdout)
 
     def test_crlf_is_rejected(self) -> None:
         holder, target = self.make_repo()

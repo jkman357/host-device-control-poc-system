@@ -102,6 +102,46 @@ alignment_cycles:
       protocol_version: 0.1.0
       wire_version: 0x01
 
+  - id: poc-system-presentation-boundary-alignment-2026-07-29
+    status: baseline
+    candidate_version: v0.2.2
+    previous_formal_version: v0.2.1
+    captured_date: 2026-07-29
+    purpose: upstream v1.1.2 and replaceable Presentation adapter alignment
+    promotion_rule: freeze_approved_exact_final_git_identity_pending
+    freeze_approval_status: received_2026-07-29
+    freeze_approval_record: FRZ-002
+    final_git_identity_status: pending_commit_tag_or_release
+    system_source_package:
+      filename: host-device-control-poc-system-v0.2.2-rc.1.zip
+      sha256: 5501e28e6f810116b05f1617cf861d36df7a554eb8cc853a1e51cfda655114c4
+      identity_limit: detached_release_candidate_zip_has_no_git_history
+    upstream_working_sources:
+      - role: reusable_framework_authority
+        name: host-device-control-framework
+        package_version: v1.1.2
+        package_sha256: d6cea78f17f410bb5cbbdd6a0d672d470cead0bc4a5753468b875f5381aa809c
+        exact_git_commit: TBD
+        identity_status: package_verified_commit_pin_pending
+      - role: reusable_project_template
+        name: host-device-control-project-template
+        package_version: v1.1.2
+        package_sha256: 1976d05e209f59d4cb564b886b9829daab699edafe002b27856bfd6d43ca6ec7
+        exact_git_commit: TBD
+        identity_status: package_verified_commit_pin_pending
+    architecture_alignment:
+      presentation_framework: WPF on .NET 8
+      presentation_role: replaceable_adapter
+      stable_ui_independent_scope: Application_Core_Protocol_DeviceSession_TransportContracts
+      approved_framework_leakage_exceptions: none_recorded
+      implementation_conformance_status: pending_pc_repository_verification
+    unchanged_authority_boundaries:
+      protocol_contract: protocol/protocol.yaml
+      protocol_authority_commit: b340645e6cb8fef9906aa7fecf22e2ca011a32bc
+      protocol_sha256: c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef
+      protocol_version: 0.1.0
+      wire_version: 0x01
+
 shared_contract:
   authority:
     repository: host-device-control-poc-system

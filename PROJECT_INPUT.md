@@ -33,6 +33,24 @@ The PoC is intended to evaluate:
 | Telemetry | Sine-wave sample every 5 ms | Initial streaming workload |
 | UI refresh | 20 Hz target | Decoupled presentation rate |
 
+## Presentation and Platform Boundary
+
+| Input | Project value |
+|---|---|
+| Presentation present | Yes |
+| Presentation framework | WPF on .NET 8 |
+| Target platform | Windows desktop |
+| Current cross-platform requirement | None; future UI replacement shall not require rewriting stable core behavior |
+| UI-independent stable scope | Application use cases, device-session behavior, Protocol codec and correlation, device state, validation, data processing, timeout/retry policy, transport contracts, and non-UI tests |
+| Presentation-specific scope | WPF View/XAML, ViewModel display state, binding, commands, navigation, dialogs, charts, visual styling, and UI-thread dispatch |
+| Infrastructure-specific scope | Serial transport, fake transport, file/CSV output, logging adapters, and platform services |
+| Composition root | WPF application startup assembles Presentation, Application/Core, and Infrastructure adapters |
+| UI service ports | User notification, file selection, UI scheduling/dispatch, navigation, and other narrow presentation-facing services as actually required |
+| Native or platform dependencies | WPF and Windows serial/device services; no Product-owned native DLL is currently required |
+| Approved framework leakage exceptions | None recorded; any exception requires an identified owner, rationale, affected layer, and approval record |
+
+The WPF layer is a replaceable Presentation adapter. Replaceable does not mean zero-cost migration: View, XAML, binding, navigation, charting, and other UI-framework-specific behavior may require reimplementation. The protected objective is to retain stable Application/Core, Protocol, device-session, and transport-contract behavior.
+
 ## Initial Goals
 
 1. Build and run the PC application in fake-device mode.
@@ -42,6 +60,7 @@ The PoC is intended to evaluate:
 5. Confirm frame integrity, sequence behavior, and loss detection.
 6. Display a stable waveform without coupling the UI refresh rate to the transport rate.
 7. Retain reproducible system-level evidence.
+8. Demonstrate that core Coordinator tests can execute without creating a WPF application or window.
 
 ## Non-Goals
 
@@ -52,12 +71,14 @@ The PoC is intended to evaluate:
 - multi-device operation;
 - installer, code signing, or field update support;
 - regulated data-retention capability;
+- zero-cost UI-framework replacement;
 - automatic Framework conformance claim.
 
 ## Known Inputs Requiring Human Confirmation
 
 - final system-level acceptance thresholds for jitter, loss, and recovery;
 - exact STM32CubeIDE and toolchain versions;
-- protocol source-of-truth migration decision;
+- exact PC and MCU implementation commits aligned to the shared Protocol authority;
 - evidence storage and retention rules;
-- release/tagging convention for the completed PoC baseline.
+- release/tagging convention for the completed PoC baseline;
+- any future approved UI-framework or platform-dependency exception.

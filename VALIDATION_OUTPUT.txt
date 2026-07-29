@@ -1,11 +1,10 @@
-Host-Device Control PoC System v0.2.1 validation
-Execution date: 2026-07-27
-Execution scope: frozen cross-platform LF enforcement baseline derived from the reviewed RC
+Host-Device Control PoC System v0.2.2 baseline validation
+Execution date: 2026-07-29
+Execution scope: frozen upstream v1.1.2 and replaceable Presentation adapter alignment baseline
 Lifecycle status: Baseline
-Freeze approval record: FRZ-001
-Previous formal version: v0.2.0
-Source clone ZIP SHA-256: d804db2efad86c71da8f69e73535ffd73f5925bab09e08d0e1c3fb88361792c0
-Git HEAD used for strict provenance: e60aed6d06cc16f4c7beb08b418efb395d8e9a87
+Previous formal version: v0.2.1
+Freeze-source ZIP SHA-256: 5501e28e6f810116b05f1617cf861d36df7a554eb8cc853a1e51cfda655114c4
+Git provenance scope: extracted ZIP without .git history
 
 Commands executed
 =================
@@ -16,14 +15,15 @@ Commands executed
 2. python tools/validate_project_repository.py
    Result: PASS
    Output: Project repository validation passed.
-   Coverage includes required `.gitattributes`, canonical LF, binary declarations,
-   RC lifecycle consistency, handoff boundaries, YAML/JSON parsing, and package residue.
+   Coverage includes required files, lifecycle consistency, LF control,
+   handoff boundaries, YAML/JSON parsing, package residue, and required
+   Presentation-boundary content.
 
 3. python tools/test_project_repository_validator.py
    Result: PASS
-   Coverage: 10 cases
+   Coverage: 13 regression cases
      - current repository accepted
-     - missing `.gitattributes` rejected
+     - missing .gitattributes rejected
      - weakened canonical LF rule rejected
      - missing WORK_CONTINUATION.md rejected
      - RC marked Baseline rejected
@@ -31,13 +31,16 @@ Commands executed
      - multi-digit semantic/RC components accepted
      - README/Changelog version drift rejected
      - missing handoff non-authority boundary rejected
+     - missing Presentation project input rejected
+     - weakened Core/WPF dependency rule rejected
+     - missing headless-core verification rule rejected
      - CRLF repository text rejected
 
-4. python tools/validate_protocol_contract.py --require-git-history
-   Result: PASS
-   Output: Protocol contract, provenance, and vectors validated.
-   The pinned authority commit exists, is an ancestor of HEAD, and contains the
-   identical authoritative Protocol blob.
+4. python tools/validate_protocol_contract.py
+   Result: PASS for current contract, provenance records, and vectors
+   Limitation: Git history was unavailable, so pinned authority-commit ancestry
+   was not independently verified. CI-grade validation still requires a full
+   checkout and --require-git-history.
 
 5. python tools/test_protocol_validator_regressions.py
    Result: PASS
@@ -50,7 +53,6 @@ Commands executed
      - telemetry frame: 24 bytes / 240 wire bits
      - minimum interval: 2500 us
      - maximum Protocol rate: 400 Hz
-     - nominal utilization: approximately 83.34%
      - policy maximum utilization: 85%
      - policy minimum reserved headroom: 15%
 
@@ -58,23 +60,22 @@ Commands executed
    Result: PASS
    Coverage: 7 rejection cases
 
-8. git diff --check
-   Result: PASS
+Presentation-boundary alignment
+===============================
 
-Cross-platform line-ending change
-=================================
-
-- Added `.gitattributes` with `* text=auto eol=lf`.
-- Marked common image, archive, executable, firmware, and document artifacts as binary.
-- Normalized candidate text to LF after the supplied Windows clone ZIP converted
-  tracked text to CRLF.
-- Added validator and regression enforcement so the LF rule cannot be silently removed.
+- Framework working package updated to v1.1.2 with recorded SHA-256.
+- Project Template working package updated to v1.1.2 with recorded SHA-256.
+- WPF is defined as a replaceable Presentation adapter.
+- Presentation, Application, Core, Infrastructure, Composition Root, UI
+  service-port, and framework-leakage boundaries are documented.
+- V&V now requires headless Application/Core tests and PC dependency inspection.
+- Repository validation rejects removal of the key boundary requirements.
 
 Unchanged technical authority
 =============================
 
-The complete `protocol/` directory and `validation/` policy content remain
-byte-identical to the frozen v0.2.0 baseline.
+The complete protocol/ and validation/ directories remain byte-identical to the
+input v0.2.1 source package.
 
 Protocol authority commit:
   b340645e6cb8fef9906aa7fecf22e2ca011a32bc
@@ -90,19 +91,23 @@ The 2500-us / 400-Hz contract and the separate 85%-utilization /
 Not executed
 ============
 
-- GitHub Actions against the committed frozen v0.2.1 tree
-- Fresh Windows clone verification after committing `.gitattributes`
-- PC application build or tests
+- strict Git-history Protocol provenance validation with --require-git-history
+- GitHub Actions against the exact frozen commit
+- PC repository project-reference or namespace inspection
+- PC build, headless Application/Core tests, or WPF Presentation adapter tests
 - STM32 firmware build or flash
 - hardware interoperability or timing capture
-- tag/Release creation, risk acceptance, or Framework conformance approval
+- tag/Release creation, release approval, risk acceptance, or Framework
+  conformance approval
 
 Baseline conclusion
 ===================
 
-The reviewed v0.2.1-rc.1 content was promoted to the frozen v0.2.1 baseline
-after explicit authorized-human freeze approval. The frozen tree passed all
-locally applicable repository, strict Git-provenance, Protocol, and
-transport-capacity checks. It does not modify Protocol or implementation
-behavior. Exact final Git commit/tag or controlled Release identity remains
-pending until commit, push, and CI completion.
+The reviewed v0.2.2-rc.1 source package passed all locally applicable
+repository, Protocol-content, regression, and transport-capacity checks and was
+promoted by explicit authorized-human freeze approval to the formal v0.2.2
+repository-content baseline. The baseline adds upstream v1.1.2 and
+Presentation-boundary governance only. It does not modify Protocol, wire
+behavior, MCU behavior, transport policy, implementation gaps, or prior evidence
+conclusions. Exact final Git commit/tag or controlled Release identity remains
+pending.

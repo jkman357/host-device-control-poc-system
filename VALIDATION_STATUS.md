@@ -1,6 +1,6 @@
 # Validation Status
 
-Last updated: 2026-07-27
+Last updated: 2026-07-29
 
 ## Status Definitions
 
@@ -18,9 +18,12 @@ Last updated: 2026-07-27
 | Framework and repository role mapping | PASS | The four upstream roles and the system/project integration layer are identified in this repository. |
 | Work-continuation boundary | PASS | `WORK_CONTINUATION.md` preserves portable working state and explicitly cannot grant approval, create V&V evidence, accept risk, authorize release, or establish Framework conformance. |
 | Cross-platform line-ending control | PASS | `.gitattributes` makes LF canonical across platforms, binary patterns are excluded, and the repository validator rejects CR/CRLF or a weakened LF rule. |
-| Repository release lifecycle | PASS | Repository metadata consistently identifies frozen `v0.2.1` as `Baseline`; explicit freeze approval was received on 2026-07-27, while exact final Git commit/tag or controlled Release identity remains pending. |
-| Upstream v1.1.0 commit pinning | IN PROGRESS | Complete Framework and Project Template v1.1.0 package hashes are recorded; exact upstream full commit SHAs remain required before controlled baseline adoption. |
-| Project baseline manifest | PASS | Exact initialization commits and the Protocol authority identity are recorded in `baselines/repositories.yaml`. |
+| Repository release lifecycle | PASS | Repository metadata consistently identifies `v0.2.2` as `Baseline`, frozen from `v0.2.2-rc.1`, with `v0.2.1` retained as the previous formal baseline. |
+| Upstream v1.1.2 source identification | IN PROGRESS | Complete Framework and Project Template `v1.1.2` package hashes are recorded; exact upstream full commit SHAs remain required before controlled baseline adoption. |
+| Project baseline manifest | PASS | Historical cycles are preserved and the `v0.2.2` baseline cycle records the current upstream packages, freeze approval `FRZ-002`, and unchanged Protocol authority. |
+| Presentation architecture definition | PASS | WPF is defined as a replaceable Presentation adapter, with explicit Application/Core, Infrastructure, Composition Root, UI service-port, and replacement-scope boundaries. |
+| Presentation boundary repository enforcement | PASS | The repository validator and regression tests reject removal of the project inputs, core WPF dependency restriction, or headless-core V&V criterion. |
+| PC implementation conformance to Presentation boundary | NOT RUN | The PC repository has not yet been inspected or tested against the new dependency and headless-core requirements. |
 | PC application source availability | PASS | WPF Coordinator, fake and serial transports, protocol tests, and build/run instructions are present at the pinned PC baseline. |
 | PC application local execution | OBSERVED | The application has been built and launched by the project owner; a formal execution record is not yet stored here. |
 | PC protocol self-tests | NOT RUN | Test capability exists in the PC repository; no system-repository evidence record has been imported. |
@@ -29,11 +32,11 @@ Last updated: 2026-07-27
 | STM32 clean build and flash | OBSERVED | Build activity has been observed during development; reproducible baseline evidence is pending. |
 | Shared Protocol authority placement | PASS | `protocol/protocol.yaml` is the project-level source of truth. |
 | Protocol authority metadata | PASS | Both provenance records identify commit `b340645e6cb8fef9906aa7fecf22e2ca011a32bc` and SHA-256 `c8e59c7d4afb33eb4858c146ffcfef0260f7ee3fb43a7bedf46df7953abe90ef`. |
-| Historical Protocol provenance | PASS | Strict validation was executed in the supplied Git-backed clone at HEAD `e60aed6`; authority commit `b340645` is an ancestor and its Protocol blob matches the recorded SHA-256. The distributable ZIP still omits `.git`, so future package-only checks cannot independently repeat ancestry verification. |
+| Historical Protocol provenance | OBSERVED | Current contract/content validation passes in the extracted ZIP, but strict ancestry verification requires a full Git clone and `--require-git-history`. |
 | Protocol contract validation | PASS | Local source-package validation checks YAML structure, framing semantics, IDs, sequence rules, response relationships, cross-file hashes, vectors, payload lengths, and CRCs. |
 | Protocol transport-capacity validation | PASS | Local validation derives the 115200-bps 8N1 budget, verifies the 24-byte telemetry frame, enforces 2500 us / 400 Hz, and applies the separate 85%-utilization / 15%-headroom policy. |
-| Protocol validator regression tests | PASS | Fourteen cases passed locally. Temporary fixtures exclude caller `.git` history, and the fake-commit case first proves a valid synthetic two-commit provenance baseline before applying the negative mutation. |
-| Transport-capacity regression tests | PASS | Seven cases were executed locally, including 401-Hz and 479-Hz policy-bypass attempts. |
+| Protocol validator regression tests | PASS | Fourteen rejection cases passed locally. |
+| Transport-capacity regression tests | PASS | Seven rejection cases passed locally, including 401-Hz and 479-Hz policy-bypass attempts. |
 | GitHub Actions | CI-GATED | The workflow runs on push and pull request. Dynamic run status is maintained in GitHub Actions rather than hard-coded into this source file. |
 | PC fake-device streaming | OBSERVED | PC repository supports fake-device streaming; formal system evidence is pending. |
 | Protocol implementation alignment | BLOCKED | Current pinned STM32 and PC baselines have not yet been reverified against the corrected authority; see `protocol/IMPLEMENTATION_ALIGNMENT.md`. |
@@ -47,11 +50,11 @@ Last updated: 2026-07-27
 
 ## Next Evidence-Producing Milestone
 
-Commit and push the frozen `v0.2.1` tree, confirm the complete GitHub Actions workflow with full Git history, verify a fresh Windows clone remains clean, and record the exact commit/tag or controlled Release. Then resume implementation alignment using:
+Inspect an identified PC application commit for WPF dependency leakage, execute Application/Core tests without creating a WPF runtime/window/Dispatcher loop, and execute Presentation adapter tests. Record the exact PC commit and results before using the new boundary as an implementation claim. In parallel, preserve the existing hardware integration sequence:
 
 ```text
 PING → GET_DEVICE_INFO → SET_STREAM_CONFIG(5000 us)
 → START_STREAM → capture telemetry → STOP_STREAM
 ```
 
-The run shall record both implementation commits, the exact Protocol baseline, COM settings, board identity, logs, timing/loss measurements, and anomalies.
+The hardware run shall record both implementation commits, the exact Protocol baseline, COM settings, board identity, logs, timing/loss measurements, and anomalies.

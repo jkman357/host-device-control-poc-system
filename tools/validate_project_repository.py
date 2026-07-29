@@ -86,7 +86,7 @@ REQUIRED_GITATTRIBUTES = {
 
 SEMVER = r"v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-rc\.(?:[1-9]\d*))?"
 README_RELEASE_RE = re.compile(
-    rf"- Candidate version: `(?P<version>{SEMVER})`\s*\n"
+    rf"- (?:Current|Candidate) version: `(?P<version>{SEMVER})`\s*\n"
     rf"- Lifecycle status: `(?P<status>Draft for Review|Baseline)`\s*\n"
     rf"- Previous formal version: `(?P<previous>v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))`"
 )
@@ -99,6 +99,28 @@ CONTINUATION_BOUNDARY = (
     "It does not grant approval, does not create V&V evidence, does not accept risk, "
     "does not authorize release, and does not establish Framework conformance."
 )
+
+PRESENTATION_REQUIRED_MARKERS = {
+    "PROJECT_INPUT.md": [
+        "## Presentation and Platform Boundary",
+        "| Presentation framework |",
+        "| UI-independent stable scope |",
+        "| Composition root |",
+        "| Approved framework leakage exceptions |",
+    ],
+    "docs/System_Architecture.md": [
+        "## Presentation Boundary",
+        "WPF is a replaceable Presentation adapter",
+        "Application and Core layers shall not reference WPF-specific",
+        "## Composition Root and UI Service Ports",
+        "## UI Replacement Scope",
+    ],
+    "docs/VV_Plan.md": [
+        "## Presentation Boundary Verification",
+        "without creating a WPF `Application`, `Window`, visual tree, or Dispatcher loop",
+        "Application/Core projects contain no direct WPF Framework dependency",
+    ],
+}
 
 
 def load_yaml(path: Path, errors: list[str]) -> Any:
@@ -125,10 +147,10 @@ def validate_release_state(errors: list[str]) -> None:
     readme_match = README_RELEASE_RE.search(readme)
     changelog_match = CHANGELOG_RELEASE_RE.search(changelog)
     if readme_match is None:
-        errors.append("README.md shall contain the controlled candidate version, lifecycle status, and previous formal version")
+        errors.append("README.md shall contain the controlled current version, lifecycle status, and previous formal version")
         return
     if changelog_match is None:
-        errors.append("CHANGELOG.md shall begin with the current candidate version and lifecycle status")
+        errors.append("CHANGELOG.md shall begin with the current version and lifecycle status")
         return
 
     version = readme_match.group("version")
@@ -224,6 +246,15 @@ def main() -> int:
     for path in ROOT.rglob("*.patch"):
         if ".git" not in path.parts:
             errors.append(f"package-only patch shall not be committed: {path.relative_to(ROOT)}")
+
+    for relative, markers in PRESENTATION_REQUIRED_MARKERS.items():
+        path = ROOT / relative
+        if not path.is_file():
+            continue
+        content = path.read_text(encoding="utf-8", errors="replace")
+        for marker in markers:
+            if marker not in content:
+                errors.append(f"{relative} missing required Presentation-boundary marker: {marker}")
 
     for relative in [
         "baselines/repositories.yaml",

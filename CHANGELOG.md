@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.2.2 — 2026-07-29 — Baseline
+
+- Aligned the current working sources with `host-device-control-framework v1.1.2` and `host-device-control-project-template v1.1.2` while preserving all earlier alignment cycles.
+- Defined WPF as the current replaceable Presentation adapter rather than the owner of Application/Core behavior.
+- Added explicit Presentation, Application, Core, Infrastructure, Composition Root, UI service-port, and framework-leakage boundaries.
+- Added project inputs for target platform, UI-independent stable scope, WPF-specific scope, platform/native dependencies, and approved exceptions.
+- Added V&V requirements for headless Application/Core tests, WPF dependency scanning, Presentation adapter tests, and UI-thread/virtualization behavior.
+- Extended repository validation and regression coverage so the new Presentation-boundary sections and core dependency restrictions cannot be silently removed.
+- Updated work-continuation and validation status records for the frozen `v0.2.2` baseline.
+- Preserved `protocol/`, `validation/`, Protocol version `0.1.0`, wire version `0x01`, Protocol authority commit and SHA-256, transport-capacity policy, implementation-gap list, and prior evidence conclusions unchanged.
+- Promoted the reviewed `v0.2.2-rc.1` content to the frozen `v0.2.2` baseline after explicit authorized-human approval; exact final Git commit/tag or controlled Release identification remains pending.
+
 ## v0.2.1 — 2026-07-27 — Baseline
 
 - Added `.gitattributes` to make LF the canonical checkout form for repository text on Windows, Linux, and macOS.
